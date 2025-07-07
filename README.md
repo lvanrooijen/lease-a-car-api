@@ -61,3 +61,34 @@ Users for testing have been seeded, you can login with the following credentials
    - **Password**: `SecurePassword123!`
    - **Role**: `ROLE_ADMIN`
    - permissions: WIP
+  
+## Structure & Design
+
+### I divide my project into separate folders for each entity. Each entity folder contains the following:
+
+1. **Entity**
+   - Represents the entity/model (Car, Customer)
+
+2. **Controller**
+   - Controller class for handling HTTP requests
+
+3. **Service**
+   - A Service class that handles the business logic related to the entity
+
+4. **Repository**
+   - Handles querying the database
+
+5. **DTO Folder**
+   - Folder containing DTOs I often use:
+     - [ ] `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity to this DTO.
+     - [ ] `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method `from()` to convert the DTO to an entity.
+     - [ ] `Patch[name of entity]`: Used as a request body for patching an entity.
+    
+### An exception folder which contains custom exceptions and a global exception handler
+
+### A security folder for Security Configuration (in this case basic authentication is used)
+
+### A utility folder 
+- [ ] annotations contains custom annotations for validation. 
+- [ ] constants contains classes that hold constant values. (Endpoints, ExceptionMessages)
+
