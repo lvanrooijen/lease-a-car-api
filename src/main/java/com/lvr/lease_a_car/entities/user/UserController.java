@@ -1,8 +1,8 @@
-package com.lvr.lease_a_car.user;
+package com.lvr.lease_a_car.entities.user;
 
-import com.lvr.lease_a_car.user.dto.GetCustomer;
-import com.lvr.lease_a_car.user.dto.PatchCustomer;
-import com.lvr.lease_a_car.user.dto.PostCustomer;
+import com.lvr.lease_a_car.entities.user.dto.GetUser;
+import com.lvr.lease_a_car.entities.user.dto.PatchUser;
+import com.lvr.lease_a_car.entities.user.dto.PostUser;
 import com.lvr.lease_a_car.utils.constants.routes.Routes;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -14,12 +14,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping(Routes.CUSTOMERS)
 @RequiredArgsConstructor
-public class CustomerController {
+public class UserController {
   private final UserService userService;
 
   @PostMapping("/register")
-  public ResponseEntity<GetCustomer> registerCustomer(@RequestBody @Valid PostCustomer body) {
-    GetCustomer user = userService.registerCustomer(body);
+  public ResponseEntity<GetUser> registerUser(@RequestBody @Valid PostUser body) {
+    GetUser user = userService.registerUser(body);
 
     URI location =
         UriComponentsBuilder.newInstance()
@@ -30,16 +30,16 @@ public class CustomerController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<GetCustomer> updateCustomer(
-      @PathVariable Long id, @RequestBody @Valid PatchCustomer patch) {
-    GetCustomer customer = userService.updateCustomer(id, patch);
+  public ResponseEntity<GetUser> updateUser(
+      @PathVariable Long id, @RequestBody @Valid PatchUser patch) {
+    GetUser customer = userService.updateUser(id, patch);
 
     return ResponseEntity.ok(customer);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
-    userService.deleteCustomer(id);
+  public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    userService.deleteUser(id);
     return ResponseEntity.ok().build();
   }
 }

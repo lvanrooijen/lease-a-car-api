@@ -1,4 +1,4 @@
-package com.lvr.lease_a_car.user;
+package com.lvr.lease_a_car.entities.user;
 
 import jakarta.persistence.*;
 import java.util.Collection;
@@ -16,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 public class User implements UserDetails {
 
+  // TODO verkeerd gelezen de gebruiker kan zelf niet registreren
+  // broker of lease company zijn de users
+  // en er moet een klanten bestand komen!
   @Builder
   public User(String email, String password, Role role, String firstName, String lastName) {
     this.email = email;

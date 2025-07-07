@@ -1,8 +1,8 @@
 package com.lvr.lease_a_car;
 
-import com.lvr.lease_a_car.user.Role;
-import com.lvr.lease_a_car.user.User;
-import com.lvr.lease_a_car.user.UserRepository;
+import com.lvr.lease_a_car.entities.user.Role;
+import com.lvr.lease_a_car.entities.user.User;
+import com.lvr.lease_a_car.entities.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,16 +17,16 @@ public class Seeder implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     seedAdmin();
-    seedCustomer();
+    seedBroker();
   }
 
-  private void seedCustomer() {
+  private void seedBroker() {
     User user =
         User.builder()
-            .email("customer@email.com")
-            .role(Role.CUSTOMER)
-            .firstName("cust")
-            .lastName("omer")
+            .email("broker@email.com")
+            .role(Role.BROKER)
+            .firstName("bro")
+            .lastName("ker")
             .password(passwordEncoder.encode("SecurePassword123!"))
             .build();
     userRepository.save(user);

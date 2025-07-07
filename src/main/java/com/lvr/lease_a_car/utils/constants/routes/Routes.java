@@ -5,5 +5,4 @@ public class Routes {
   public static final String AUTH = "/api/v1";
   public static final String CUSTOMERS = BASE_ROUTE + "/customers";
   public static final String CARS = BASE_ROUTE + "/cars";
-  public static final String CONTRACTS = BASE_ROUTE + "/contracts";
 }

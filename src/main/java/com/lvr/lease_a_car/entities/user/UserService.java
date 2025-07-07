@@ -1,9 +1,9 @@
-package com.lvr.lease_a_car.user;
+package com.lvr.lease_a_car.entities.user;
 
+import com.lvr.lease_a_car.entities.user.dto.GetUser;
+import com.lvr.lease_a_car.entities.user.dto.PatchUser;
+import com.lvr.lease_a_car.entities.user.dto.PostUser;
 import com.lvr.lease_a_car.exception.UserAlreadyRegisteredException;
-import com.lvr.lease_a_car.user.dto.GetCustomer;
-import com.lvr.lease_a_car.user.dto.PatchCustomer;
-import com.lvr.lease_a_car.user.dto.PostCustomer;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +15,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public GetCustomer registerCustomer(PostCustomer body) {
+  public GetUser registerUser(PostUser body) {
     if (userRepository.findByEmailIgnoreCase(body.email()).isPresent()) {
       throw new UserAlreadyRegisteredException("This customer is already registered");
     }
@@ -26,15 +26,15 @@ public class UserService {
             .password(passwordEncoder.encode(body.password()))
             .firstName(body.firstName())
             .lastName(body.lastName())
-            .role(Role.CUSTOMER)
+            .role(Role.BROKER)
             .build();
 
     userRepository.save(user);
-    return GetCustomer.to(user);
+    return GetUser.to(user);
   }
 
   // TODO mag alleen als user zelf of als juiste rol
-  public GetCustomer updateCustomer(Long customerId, PatchCustomer patch) {
+  public GetUser updateUser(Long customerId, PatchUser patch) {
     User customer =
         userRepository
             .findById(customerId)
@@ -54,11 +54,11 @@ public class UserService {
     }
 
     userRepository.save(customer);
-    return GetCustomer.to(customer);
+    return GetUser.to(customer);
   }
 
   // TODO mag alleen als user zelf of als juiste rol
-  public void deleteCustomer(Long customerId) {
+  public void deleteUser(Long customerId) {
     userRepository
         .findById(customerId)
         .orElseThrow(

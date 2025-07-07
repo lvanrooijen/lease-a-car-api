@@ -1,7 +1,8 @@
-package com.lvr.lease_a_car.user;
+package com.lvr.lease_a_car.entities.user;
 
 public enum Role {
-  CUSTOMER("ROLE_CUSTOMER"),
+  BROKER("ROLE_BROKER"),
+  EMPLOYEE("ROLE_EMPLOYEE"),
   ADMIN("ROLE_ADMIN");
 
   private final String role;

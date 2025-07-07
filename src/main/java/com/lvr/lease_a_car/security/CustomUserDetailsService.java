@@ -1,6 +1,6 @@
 package com.lvr.lease_a_car.security;
 
-import com.lvr.lease_a_car.user.UserRepository;
+import com.lvr.lease_a_car.entities.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

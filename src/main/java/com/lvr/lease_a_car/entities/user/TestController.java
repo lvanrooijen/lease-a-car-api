@@ -1,4 +1,4 @@
-package com.lvr.lease_a_car.user;
+package com.lvr.lease_a_car.entities.user;
 
 import com.lvr.lease_a_car.utils.constants.routes.Routes;
 import java.util.List;

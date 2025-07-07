@@ -49,4 +49,9 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleUserAlreadyRegisteredException(Exception e) {
     return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
   }
+
+  @ExceptionHandler(ExistingCarException.class)
+  public ProblemDetail handleExistingCarException(Exception e) {
+    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+  }
 }
