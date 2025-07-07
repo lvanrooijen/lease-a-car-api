@@ -64,31 +64,29 @@ Users for testing have been seeded, you can login with the following credentials
   
 ## Structure & Design
 
-### I divide my project into separate folders for each entity. Each entity folder contains the following:
+### *This project has the following structure:*
 
-1. **Entity**
-   - Represents the entity/model (Car, Customer)
 
-2. **Controller**
-   - Controller class for handling HTTP requests
+#### *An entity folder which contains:*
 
-3. **Service**
-   - A Service class that handles the business logic related to the entity
+-  `Entity` : Represents the entity/model (Car, Customer)
 
-4. **Repository**
-   - Handles querying the database
+-  `Controller` : Controller class for handling HTTP requests
 
-5. **DTO Folder**
-   - Folder containing DTOs I often use:
-     - [ ] `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity to this DTO.
-     - [ ] `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method `from()` to convert the DTO to an entity.
-     - [ ] `Patch[name of entity]`: Used as a request body for patching an entity.
+-  `Service` : A Service class that handles the business logic related to the entity
+
+-  `Repository` : Handles querying the database
+
+-  `DTO Folder` : Folder containing DTOs I often use:
+   * `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity to this DTO.
+   *  `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method `from()` to convert the DTO to an entity.
+   *  `Patch[name of entity]`: Used as a request body for patching an entity.
     
-### An exception folder which contains custom exceptions and a global exception handler
+#### *An exception folder containing custom exceptions and a global exception handler*
 
-### A security folder for Security Configuration (in this case basic authentication is used)
+#### *A security folder for Security Configuration*
 
-### A utility folder 
-- [ ] annotations contains custom annotations for validation. 
-- [ ] constants contains classes that hold constant values. (Endpoints, ExceptionMessages)
+#### *A utility folder containing the following folders:*
+- `annotations` : Contains custom annotations for validation, primarily used for validating values in request bodies through DTOs.
+- `constants` : contains classes that hold constant values. (Endpoints, ExceptionMessages)
 
