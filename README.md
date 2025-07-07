@@ -14,10 +14,11 @@ Simple Lease-a-Car API
 2. mvn install
 3. mvn spring-boot:run
       - The API will be running on http://localhost:8080
+  
 
 ## Endpoints
 
-You can access all the API endpoints and detailed documentation via Swagger UI at:
+You can access all the API endpoints and documentation via Swagger UI at:
 
          http://localhost:8080/swagger-ui/index.html
 
@@ -37,31 +38,8 @@ Cars:
 - `GET /api/v1/cars/{id}`
 - `DELETE /api/v1/cars/{id}`
 - `PATCH /api/v1/cars/{id}`
-- `GET /api/v1/cars/lease-rate` requires query paramaters 
+- `GET /api/v1/cars/lease-rate` requires query paramaters
 
-## Seeded Users
-Users for testing have been seeded, you can login with the following credentials:
-
-~For safety reasons a very secure password has been carefully selected~
-
-1. **Broker**:
-   - **Username**: `broker@email.com`
-   - **Password**: `SecurePassword123!`
-   - **Role**: `ROLE_BROKER`
-   - permissions: WIP
-
-2. **Employee**:
-   - **Username**: `employee@email.com`
-   - **Password**: `SecurePassword123!`
-   - **Role**: `ROLE_EMPLOYEE`
-   - permissions: WIP
-
-2. **Admin**:
-   - **Username**: `admin@email.com`
-   - **Password**: `SecurePassword123!`
-   - **Role**: `ROLE_ADMIN`
-   - permissions: WIP
-  
 ## Structure & Design
 
 ### *This project has the following structure:*
@@ -89,4 +67,29 @@ Users for testing have been seeded, you can login with the following credentials
 #### *A utility folder containing the following folders:*
 - `annotations` : Contains custom annotations for validation, primarily used for validating values in request bodies through DTOs.
 - `constants` : contains classes that hold constant values. (Endpoints, ExceptionMessages)
+
+
+## Seeded Users
+Users for testing have been seeded, you can login with the following credentials:
+
+~For safety reasons a very secure password has been carefully selected~
+
+1. **Broker**:
+   - **Username**: `broker@email.com`
+   - **Password**: `SecurePassword123!`
+   - **Role**: `ROLE_BROKER`
+   - permissions: WIP
+
+2. **Employee**:
+   - **Username**: `employee@email.com`
+   - **Password**: `SecurePassword123!`
+   - **Role**: `ROLE_EMPLOYEE`
+   - permissions: WIP
+
+2. **Admin**:
+   - **Username**: `admin@email.com`
+   - **Password**: `SecurePassword123!`
+   - **Role**: `ROLE_ADMIN`
+   - permissions: WIP
+
 
