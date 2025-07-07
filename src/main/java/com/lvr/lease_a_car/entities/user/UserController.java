@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(Routes.CUSTOMERS)
+@RequestMapping(Routes.USERS)
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
@@ -22,10 +22,7 @@ public class UserController {
     GetUser user = userService.registerUser(body);
 
     URI location =
-        UriComponentsBuilder.newInstance()
-            .path("/customers/{id}")
-            .buildAndExpand(user.id())
-            .toUri();
+        UriComponentsBuilder.newInstance().path("/users/{id}").buildAndExpand(user.id()).toUri();
     return ResponseEntity.created(location).body(user);
   }
 

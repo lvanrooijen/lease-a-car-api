@@ -1,6 +1,5 @@
 package com.lvr.lease_a_car.utils.annotation.role;
 
-import com.lvr.lease_a_car.utils.annotation.password.PasswordValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;
@@ -11,9 +10,9 @@ import java.lang.annotation.Target;
 /** Verifies if role appointed to a user exists */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PasswordValidator.class)
+@Constraint(validatedBy = HasRoleValidator.class)
 public @interface HasRole {
-  String message() default "Password does not meet the requirements";
+  String message() default "Invalid Role";
 
   Class<?>[] groups() default {};
 

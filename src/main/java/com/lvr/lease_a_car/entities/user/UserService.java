@@ -3,6 +3,7 @@ package com.lvr.lease_a_car.entities.user;
 import com.lvr.lease_a_car.entities.user.dto.GetUser;
 import com.lvr.lease_a_car.entities.user.dto.PatchUser;
 import com.lvr.lease_a_car.entities.user.dto.PostUser;
+import com.lvr.lease_a_car.exception.InvalidUserRoleException;
 import com.lvr.lease_a_car.exception.UserAlreadyRegisteredException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,20 @@ public class UserService {
       throw new UserAlreadyRegisteredException("This customer is already registered");
     }
 
+    Role role = null;
+    try {
+      role = Role.valueOf(body.role());
+    } catch (IllegalArgumentException e) {
+      throw new InvalidUserRoleException("Invalid role");
+    }
+
     User user =
         User.builder()
             .email(body.email())
             .password(passwordEncoder.encode(body.password()))
             .firstName(body.firstName())
             .lastName(body.lastName())
-            .role(Role.BROKER)
+            .role(role)
             .build();
 
     userRepository.save(user);

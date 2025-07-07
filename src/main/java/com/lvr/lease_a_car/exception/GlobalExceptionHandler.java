@@ -3,6 +3,7 @@ package com.lvr.lease_a_car.exception;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
   @ExceptionHandler(EntityNotFoundException.class)
   public ProblemDetail handleEntityNotFoundException(Exception e) {
@@ -21,6 +23,7 @@ public class GlobalExceptionHandler {
   /** Fall back exception handler, handles all the uncaught exceptions */
   @ExceptionHandler(Exception.class)
   public ProblemDetail handleException(Exception e) {
+    log.error("[FALLBACK] " + e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(
         HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred");
   }
@@ -52,6 +55,11 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ExistingCarException.class)
   public ProblemDetail handleExistingCarException(Exception e) {
+    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+  }
+
+  @ExceptionHandler(InvalidUserRoleException.class)
+  public ProblemDetail handleInvalidUserRoleException(Exception e) {
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 }
