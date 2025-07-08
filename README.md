@@ -23,29 +23,32 @@ You can access all the API endpoints and documentation via Swagger UI at:
          http://localhost:8080/swagger-ui/index.html
 
 Users:
-- `POST /api/v1/users/register`
-- `DELETE /api/v1/users/{id}`
-- `PATCH /api/v1/users/{id}`
+- `POST /api/v1/users/register` 
+- `DELETE /api/v1/users/{id}`      (admin access only)
+- `PATCH /api/v1/users/{id}`      
 
 Customers:
-- `POST /api/v1/customers`
-- `DELETE /api/v1/customers/{id}`
-- `PATCH /api/v1/customer/{id}` 
+- `POST /api/v1/customers`               
+- `DELETE /api/v1/customers/{id}`      (admin & broker access only)
+- `PATCH /api/v1/customer/{id}`      (admin & broker access only)
 
 Cars:
-- `GET /api/v1/cars`
-- `POST /api/v1/cars`
-- `GET /api/v1/cars/{id}`
-- `DELETE /api/v1/cars/{id}`
-- `PATCH /api/v1/cars/{id}`
+- `GET /api/v1/cars`      (soft deleted cars show for admin only)
+- `POST /api/v1/cars`      (admin access only)
+- `GET /api/v1/cars/{id}` (soft deleted items show for admin only)
+- `DELETE /api/v1/cars/{id}`      (admin access only)
+- `PATCH /api/v1/cars/{id}`      (admin access only)
 - `GET /api/v1/cars/lease-rate` requires query paramaters
 
 ## Structure & Design
 
-### *This project has the following structure:*
+### *This project contains the following directories:*
 
+#### *`exception` folder containing custom exceptions and a global exception handler*
 
-#### *An entity folder which contains:*
+#### *`security` folder for Spring Security related classes*
+
+#### *`entity` folder which contains:*
 
 -  `Entity` : Represents the entity/model (Car, Customer)
 
@@ -59,14 +62,11 @@ Cars:
    * `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity to this DTO.
    *  `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method `from()` to convert the DTO to an entity.
    *  `Patch[name of entity]`: Used as a request body for patching an entity.
-    
-#### *An exception folder containing custom exceptions and a global exception handler*
 
-#### *A security folder for Security Configuration*
-
-#### *A utility folder containing the following folders:*
+#### *`utility` folder containing the following folders:*
 - `annotations` : Contains custom annotations for validation, primarily used for validating values in request bodies through DTOs.
 - `constants` : contains classes that hold constant values. (Endpoints, ExceptionMessages)
+- `configuration` : contains classes that hold configurations
 
 
 ## Seeded Users
@@ -78,18 +78,15 @@ Users for testing have been seeded, you can login with the following credentials
    - **Username**: `broker@email.com`
    - **Password**: `SecurePassword123!`
    - **Role**: `ROLE_BROKER`
-   - permissions: WIP
 
 2. **Employee**:
    - **Username**: `employee@email.com`
    - **Password**: `SecurePassword123!`
    - **Role**: `ROLE_EMPLOYEE`
-   - permissions: WIP
 
 2. **Admin**:
    - **Username**: `admin@email.com`
    - **Password**: `SecurePassword123!`
    - **Role**: `ROLE_ADMIN`
-   - permissions: WIP
 
 
