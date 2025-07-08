@@ -1,9 +1,10 @@
 package com.lvr.lease_a_car.entities.car.dto;
 
+import com.lvr.lease_a_car.entities.car.Car;
 import java.math.BigDecimal;
 
-public record GetLeaseRate(BigDecimal leaseRate) {
-  public static GetLeaseRate to(BigDecimal leaseRate) {
-    return new GetLeaseRate(leaseRate);
+public record GetLeaseRate(Long carId, BigDecimal leaseRate) {
+  public static GetLeaseRate to(BigDecimal leaseRate, Car car) {
+    return new GetLeaseRate(car.getId(), leaseRate);
   }
 }

@@ -5,7 +5,6 @@ import com.lvr.lease_a_car.entities.customer.dto.PatchCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PostCustomer;
 import com.lvr.lease_a_car.exception.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +17,7 @@ public class CustomerService {
         Customer.builder()
             .name(body.name())
             .street(body.street())
-            .houseNumber(body.houseNumber())
+            .houseNumber(Integer.parseInt(body.houseNumber()))
             .houseNumberAddition(body.houseNumberAddition())
             .zipcode(body.zipcode())
             .city(body.city())
@@ -29,13 +28,27 @@ public class CustomerService {
     return GetCustomer.to(customer);
   }
 
-  @PreAuthorize("hasRole('ROLE_BROKER')")
   public GetCustomer patchCustomer(Long id, PatchCustomer patch) {
     Customer customer =
         customerRepository
             .findById(id)
             .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
 
+    updateFields(customer, patch);
+
+    customerRepository.save(customer);
+    return GetCustomer.to(customer);
+  }
+
+  public void deleteCustomer(Long id) {
+    customerRepository
+        .findById(id)
+        .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
+
+    customerRepository.deleteById(id);
+  }
+
+  public void updateFields(Customer customer, PatchCustomer patch) {
     if (patch.name() != null) {
       customer.setName(patch.name());
     }
@@ -43,7 +56,7 @@ public class CustomerService {
       customer.setStreet(patch.street());
     }
     if (patch.houseNumber() != null) {
-      customer.setHouseNumber(patch.houseNumber());
+      customer.setHouseNumber(Integer.parseInt(patch.houseNumber()));
     }
     if (patch.houseNumberAddition() != null) {
       customer.setHouseNumberAddition(patch.houseNumberAddition());
@@ -60,16 +73,5 @@ public class CustomerService {
     if (patch.phoneNumber() != null) {
       customer.setPhoneNumber(patch.phoneNumber());
     }
-
-    customerRepository.save(customer);
-    return GetCustomer.to(customer);
-  }
-
-  public void deleteCustomer(Long id) {
-    customerRepository
-        .findById(id)
-        .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
-
-    customerRepository.deleteById(id);
   }
 }

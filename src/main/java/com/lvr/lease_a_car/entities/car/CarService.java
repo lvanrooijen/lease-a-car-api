@@ -4,12 +4,14 @@ import com.lvr.lease_a_car.entities.car.dto.GetCar;
 import com.lvr.lease_a_car.entities.car.dto.GetLeaseRate;
 import com.lvr.lease_a_car.entities.car.dto.PatchCar;
 import com.lvr.lease_a_car.entities.car.dto.PostCar;
+import com.lvr.lease_a_car.entities.user.User;
 import com.lvr.lease_a_car.exception.ExistingCarException;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,23 +20,34 @@ public class CarService {
   private final CarRepository carRepository;
 
   public GetCar getCarById(Long id) {
-    // if is lease company show deleted cars
-    // TODO
-    // if broker show non-deleted cars
-    Car car =
-        carRepository
-            .findByIdAndIsDeletedFalse(id)
-            .orElseThrow(
-                () -> new EntityNotFoundException("Car by id " + id + " can not be found"));
+    User loggedInUser = getLoggedInUser();
 
+    Car car;
+    if (loggedInUser.isAdmin()) {
+      car =
+          carRepository
+              .findById(id)
+              .orElseThrow(
+                  () -> new EntityNotFoundException("Car by id " + id + " can not be found"));
+    } else {
+      car =
+          carRepository
+              .findByIdAndIsDeletedFalse(id)
+              .orElseThrow(
+                  () -> new EntityNotFoundException("Car by id " + id + " can not be found"));
+    }
     return GetCar.to(car);
   }
 
   public List<GetCar> getAllCars() {
-    // if admin just return find all cars
-    // todo
-    // if broker return non-deleted cars
-    List<Car> cars = carRepository.findAllByIsDeletedFalse();
+    User loggedInUser = getLoggedInUser();
+
+    List<Car> cars;
+    if (loggedInUser.isAdmin()) {
+      cars = carRepository.findAll();
+    } else {
+      cars = carRepository.findAllByIsDeletedFalse();
+    }
     return cars.stream().map(GetCar::to).toList();
   }
 
@@ -67,11 +80,77 @@ public class CarService {
                     new EntityNotFoundException(
                         String.format(
                             "Failed to update car, Car with id %d can not be found", id)));
-    if (car.isDeleted()) {
-      // if admin go head else throw exc
-      // throw new ForbiddenException("Admin only action");
-    }
 
+    updateCarFields(car, patch);
+    carRepository.save(car);
+    return GetCar.to(car);
+  }
+
+  public void deleteCar(Long id) {
+    Car car =
+        carRepository
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        String.format("Failed to delete, a car with id %d can not be found.", id)));
+    car.setDeleted(true);
+    carRepository.save(car);
+  }
+
+  public GetLeaseRate getLeaseRate(
+      Long carId, Double duration, Double interestRate, Double mileage) {
+    Car car =
+        carRepository
+            .findById(carId)
+            .orElseThrow(
+                () -> new EntityNotFoundException("Car with id " + carId + " can not be found"));
+
+    BigDecimal leaseRate =
+        calculateLeaseRate(
+            BigDecimal.valueOf(mileage),
+            BigDecimal.valueOf(duration),
+            BigDecimal.valueOf(interestRate),
+            BigDecimal.valueOf(car.getNettPrice()));
+
+    return GetLeaseRate.to(leaseRate, car);
+  }
+
+  private BigDecimal calculateLeaseRate(
+      BigDecimal mileage, BigDecimal duration, BigDecimal interestRate, BigDecimal nettPrice) {
+    // ((( mileage / 12 ) * duration ) / Nett price) +
+    // ((( Interest rate / 100 ) * Nett price) / 12 )
+    return mileage
+        .divide(BigDecimal.valueOf(12), RoundingMode.CEILING)
+        .multiply(duration)
+        .divide(nettPrice, RoundingMode.CEILING)
+        .add(
+            interestRate
+                .divide(BigDecimal.valueOf(100), RoundingMode.CEILING)
+                .multiply(nettPrice)
+                .divide(BigDecimal.valueOf(12), 2, RoundingMode.CEILING));
+  }
+
+  /**
+   * Checks if a car with this make, model and version is already present in the database. Soft
+   * deleted Cars are not taken into consideration
+   *
+   * @param make
+   * @param model
+   * @param version
+   * @return true if a car with this make,model and version is present
+   */
+  public Boolean isRegistered(String make, String model, String version) {
+    return carRepository
+        .findByMakeAndModelAndVersionAndIsDeletedFalse(make, model, version)
+        .isPresent();
+  }
+
+  public User getLoggedInUser() {
+    return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public void updateCarFields(Car car, PatchCar patch) {
     if (patch.make() != null) {
       car.setMake(patch.make());
     }
@@ -93,63 +172,5 @@ public class CarService {
     if (patch.nettPrice() != null) {
       car.setNettPrice(patch.nettPrice());
     }
-    carRepository.save(car);
-    return GetCar.to(car);
-  }
-
-  public void deleteCar(Long id) {
-    Car car =
-        carRepository
-            .findById(id)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        String.format("Failed to delete, a car with id %d can not be found.", id)));
-    car.setDeleted(true);
-    carRepository.save(car);
-  }
-
-  public GetLeaseRate getLeaseRate(
-      Long carId, Double duration, Double interestRate, Double mileage) {
-    // TODO nog even dubbel checke welke mogelijke verkeerde waardes kunnen worden meegegeven bij
-    // duration en interest rate en wat dan? en wat als null
-    Car car =
-        carRepository
-            .findById(carId)
-            .orElseThrow(
-                () -> new EntityNotFoundException("Car with id " + carId + " can not be found"));
-
-    BigDecimal mileageBD = BigDecimal.valueOf(mileage);
-    BigDecimal nettPrice = BigDecimal.valueOf(car.getNettPrice());
-    BigDecimal interestRateBD = new BigDecimal(interestRate);
-
-    // ((( mileage / 12 ) * duration ) / Nett price) +
-    // ((( Interest rate / 100 ) * Nett price) / 12 )
-    // TODO testen of ik geen fouten heb gemaakt
-    BigDecimal leaseRate =
-        mileageBD
-            .divide(BigDecimal.valueOf(12), RoundingMode.CEILING)
-            .multiply(BigDecimal.valueOf(duration))
-            .divide(nettPrice, RoundingMode.CEILING)
-            .add(
-                interestRateBD
-                    .divide(BigDecimal.valueOf(100), RoundingMode.CEILING)
-                    .multiply(nettPrice)
-                    .divide(BigDecimal.valueOf(12), RoundingMode.CEILING));
-    return GetLeaseRate.to(leaseRate);
-  }
-
-  /**
-   * Verifies if a car with this make, model and version is already present in the database
-   *
-   * @param make
-   * @param model
-   * @param version
-   * @return Boolean
-   */
-  public Boolean isRegistered(String make, String model, String version) {
-    return carRepository
-        .findByMakeAndModelAndVersionAndIsDeletedFalse(make, model, version)
-        .isPresent();
   }
 }

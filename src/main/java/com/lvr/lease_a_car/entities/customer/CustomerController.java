@@ -4,9 +4,11 @@ import com.lvr.lease_a_car.entities.customer.dto.GetCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PatchCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PostCustomer;
 import com.lvr.lease_a_car.utils.constants.routes.Routes;
+import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -16,8 +18,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class CustomerController {
   private final CustomerService customerService;
 
-  @PostMapping
-  public ResponseEntity<GetCustomer> createCustomer(@RequestBody PostCustomer body) {
+  @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
+  @PostMapping("/register")
+  public ResponseEntity<GetCustomer> createCustomer(@Valid @RequestBody PostCustomer body) {
     GetCustomer customer = customerService.createCustomer(body);
     URI location =
         UriComponentsBuilder.newInstance()
@@ -27,13 +30,15 @@ public class CustomerController {
     return ResponseEntity.created(location).body(customer);
   }
 
+  @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN')")
   @PatchMapping("/{id}")
   public ResponseEntity<GetCustomer> updateCustomer(
-      @PathVariable Long id, @RequestBody PatchCustomer patch) {
+      @PathVariable Long id, @RequestBody @Valid PatchCustomer patch) {
     GetCustomer customer = customerService.patchCustomer(id, patch);
     return ResponseEntity.ok(customer);
   }
 
+  @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
     customerService.deleteCustomer(id);

@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -19,18 +20,21 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class CarController {
   private final CarService carService;
 
+  @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
   @GetMapping("/{id}")
   public ResponseEntity<GetCar> getCarById(@PathVariable Long id) {
     GetCar car = carService.getCarById(id);
     return ResponseEntity.ok(car);
   }
 
+  @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
   @GetMapping()
   public ResponseEntity<List<GetCar>> getAllCars() {
     List<GetCar> cars = carService.getAllCars();
     return ResponseEntity.ok(cars);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<GetCar> postCar(@Valid @RequestBody PostCar postCar) {
     GetCar car = carService.createCar(postCar);
@@ -39,18 +43,21 @@ public class CarController {
     return ResponseEntity.created(location).body(car);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/{id}")
   public ResponseEntity<GetCar> patchCar(@PathVariable Long id, @RequestBody PatchCar patchCar) {
     GetCar car = carService.updateCar(id, patchCar);
     return ResponseEntity.ok(car);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
     carService.deleteCar(id);
     return ResponseEntity.ok().build();
   }
 
+  @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
   @GetMapping("/{id}/lease-rate")
   public ResponseEntity<GetLeaseRate> getLeaseRate(
       @PathVariable Long id,

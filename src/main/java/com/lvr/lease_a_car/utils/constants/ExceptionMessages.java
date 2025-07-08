@@ -6,4 +6,5 @@ public class ExceptionMessages {
 
   public static final String LAST_NAME_INVALID_LENGTH =
       "Last name must be between 3 and 100 characters";
+  public static final String INVALID_HOUSE_NUMBER = "House number must be a positive number";
 }

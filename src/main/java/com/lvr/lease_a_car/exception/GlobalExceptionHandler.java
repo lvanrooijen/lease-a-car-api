@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,5 +63,23 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(InvalidUserRoleException.class)
   public ProblemDetail handleInvalidUserRoleException(Exception e) {
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ProblemDetail handleAccessDeniedException(Exception e) {
+    log.warn("[AccessDeniedException] " + e.getMessage(), e);
+    return ProblemDetail.forStatusAndDetail(
+        HttpStatus.FORBIDDEN, "You dont have permission to access this resource");
+  }
+
+  @ExceptionHandler(CustomerNotFoundException.class)
+  public ProblemDetail handleCustomerNotFoundException(Exception e) {
+    return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ProblemDetail handleHttpMessageNotReadableException(Exception e) {
+    log.warn("[HttpMessageNotReadableException] " + e.getMessage(), e);
+    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "invalid request body");
   }
 }

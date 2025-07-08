@@ -41,7 +41,6 @@ public class UserService {
     return GetUser.to(user);
   }
 
-  // TODO mag alleen als user zelf of als juiste rol
   public GetUser updateUser(Long customerId, PatchUser patch) {
     User customer =
         userRepository
@@ -65,7 +64,6 @@ public class UserService {
     return GetUser.to(customer);
   }
 
-  // TODO mag alleen als user zelf of als juiste rol
   public void deleteUser(Long customerId) {
     userRepository
         .findById(customerId)
