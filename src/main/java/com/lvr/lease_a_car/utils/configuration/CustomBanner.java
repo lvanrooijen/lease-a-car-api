@@ -4,6 +4,10 @@ import java.io.PrintStream;
 import org.springframework.boot.Banner;
 import org.springframework.core.env.Environment;
 
+/**
+ * Creates a new Banner that gets printed in the terminal and changes the colors of text printed in
+ * the terminal
+ */
 public class CustomBanner implements Banner {
   private static final String SEA_GREEN = "\u001B[38;2;0;145;110m";
   private static final String BLUE = "\u001B[38;2;0;144;193m";

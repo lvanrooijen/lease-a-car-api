@@ -7,7 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** Verifies if role appointed to a user exists */
+/**
+ * Verifies if the Role fits one of the user Roles
+ *
+ * <p>Requirements in {@link HasRoleValidator}
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = HasRoleValidator.class)

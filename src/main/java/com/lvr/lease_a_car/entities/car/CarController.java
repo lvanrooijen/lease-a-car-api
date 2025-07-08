@@ -4,7 +4,7 @@ import com.lvr.lease_a_car.entities.car.dto.GetCar;
 import com.lvr.lease_a_car.entities.car.dto.GetLeaseRate;
 import com.lvr.lease_a_car.entities.car.dto.PatchCar;
 import com.lvr.lease_a_car.entities.car.dto.PostCar;
-import com.lvr.lease_a_car.utils.constants.routes.Routes;
+import com.lvr.lease_a_car.utils.constants.routes.Endpoints;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(Routes.CARS)
+@RequestMapping(Endpoints.CARS)
 @RequiredArgsConstructor
 public class CarController {
   private final CarService carService;

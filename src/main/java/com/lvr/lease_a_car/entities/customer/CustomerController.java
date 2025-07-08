@@ -3,7 +3,7 @@ package com.lvr.lease_a_car.entities.customer;
 import com.lvr.lease_a_car.entities.customer.dto.GetCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PatchCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PostCustomer;
-import com.lvr.lease_a_car.utils.constants.routes.Routes;
+import com.lvr.lease_a_car.utils.constants.routes.Endpoints;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(Routes.CUSTOMERS)
+@RequestMapping(Endpoints.CUSTOMERS)
 @RequiredArgsConstructor
 public class CustomerController {
   private final CustomerService customerService;

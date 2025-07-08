@@ -3,6 +3,12 @@ package com.lvr.lease_a_car.utils.annotation.password;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+/**
+ * Validates a password
+ *
+ * <p>Password must fit the following requirements: min length 8 max length 30, must contain at
+ * least 1 digit, lowercase letter, uppercase letter,special character. Blank spaces are not allowed
+ */
 public class PasswordValidator implements ConstraintValidator<Password, String> {
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {

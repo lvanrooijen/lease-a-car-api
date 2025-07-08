@@ -3,6 +3,11 @@ package com.lvr.lease_a_car.utils.annotation.role;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+/**
+ * Validates a Role
+ *
+ * <p>Roles: BROKER, EMPLOYEE
+ */
 public class HasRoleValidator implements ConstraintValidator<HasRole, String> {
 
   @Override

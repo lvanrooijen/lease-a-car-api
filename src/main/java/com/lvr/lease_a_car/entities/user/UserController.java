@@ -3,7 +3,7 @@ package com.lvr.lease_a_car.entities.user;
 import com.lvr.lease_a_car.entities.user.dto.GetUser;
 import com.lvr.lease_a_car.entities.user.dto.PatchUser;
 import com.lvr.lease_a_car.entities.user.dto.PostUser;
-import com.lvr.lease_a_car.utils.constants.routes.Routes;
+import com.lvr.lease_a_car.utils.constants.routes.Endpoints;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(Routes.USERS)
+@RequestMapping(Endpoints.USERS)
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
