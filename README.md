@@ -14,10 +14,11 @@ Simple Lease-a-Car API
 2. mvn install
 3. mvn spring-boot:run
       - The API will be running on http://localhost:8080
+  
 
 ## Endpoints
 
-You can access all the API endpoints and detailed documentation via Swagger UI at:
+You can access all the API endpoints and documentation via Swagger UI at:
 
          http://localhost:8080/swagger-ui/index.html
 
@@ -37,7 +38,36 @@ Cars:
 - `GET /api/v1/cars/{id}`
 - `DELETE /api/v1/cars/{id}`
 - `PATCH /api/v1/cars/{id}`
-- `GET /api/v1/cars/lease-rate` requires query paramaters 
+- `GET /api/v1/cars/lease-rate` requires query paramaters
+
+## Structure & Design
+
+### *This project has the following structure:*
+
+
+#### *An entity folder which contains:*
+
+-  `Entity` : Represents the entity/model (Car, Customer)
+
+-  `Controller` : Controller class for handling HTTP requests
+
+-  `Service` : A Service class that handles the business logic related to the entity
+
+-  `Repository` : Handles querying the database
+
+-  `DTO Folder` : Folder containing DTOs I often use:
+   * `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity to this DTO.
+   *  `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method `from()` to convert the DTO to an entity.
+   *  `Patch[name of entity]`: Used as a request body for patching an entity.
+    
+#### *An exception folder containing custom exceptions and a global exception handler*
+
+#### *A security folder for Security Configuration*
+
+#### *A utility folder containing the following folders:*
+- `annotations` : Contains custom annotations for validation, primarily used for validating values in request bodies through DTOs.
+- `constants` : contains classes that hold constant values. (Endpoints, ExceptionMessages)
+
 
 ## Seeded Users
 Users for testing have been seeded, you can login with the following credentials:
@@ -61,3 +91,5 @@ Users for testing have been seeded, you can login with the following credentials
    - **Password**: `SecurePassword123!`
    - **Role**: `ROLE_ADMIN`
    - permissions: WIP
+
+
