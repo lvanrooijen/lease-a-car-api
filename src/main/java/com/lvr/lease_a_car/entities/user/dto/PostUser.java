@@ -7,6 +7,17 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
+/**
+ * DTO used for creating new Users
+ *
+ * <p>All fields are required to contain a value
+ *
+ * @param email
+ * @param password uses {@link Password} validator
+ * @param firstName
+ * @param lastName
+ * @param role uses {@link HasRole} validator
+ */
 public record PostUser(
     @NotBlank @Email(message = "Invalid email address") String email,
     @NotBlank @Password String password,

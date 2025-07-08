@@ -14,11 +14,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+/** Handles the business logic related to cars */
 @Service
 @RequiredArgsConstructor
 public class CarService {
   private final CarRepository carRepository;
 
+  /**
+   * Retrieves a car by ID
+   *
+   * <p>If the authenticated user has admin role, this also returns soft-deleted cars
+   *
+   * @param id represents the id of the car to retrieve
+   * @return {@link GetCar}
+   * @throws EntityNotFoundException when a car with this ID is not present in the database
+   */
   public GetCar getCarById(Long id) {
     User loggedInUser = getLoggedInUser();
 
@@ -39,6 +49,13 @@ public class CarService {
     return GetCar.to(car);
   }
 
+  /**
+   * Retrieves a list of cars
+   *
+   * <p>If the authenticated user had admin role, the returned list will contain soft deleted cars
+   *
+   * @return list of {@link GetCar}
+   */
   public List<GetCar> getAllCars() {
     User loggedInUser = getLoggedInUser();
 
@@ -51,6 +68,15 @@ public class CarService {
     return cars.stream().map(GetCar::to).toList();
   }
 
+  /**
+   * Creates a Car
+   *
+   * <p>Creates a car object and saves it in the database
+   *
+   * @param postCar {@link PostCar}
+   * @return GetCar {@link GetCar}
+   * @throws ExistingCarException when a car with this ID is not present in the database
+   */
   public GetCar createCar(PostCar postCar) {
     if (isRegistered(postCar.make(), postCar.model(), postCar.version())) {
       throw new ExistingCarException(
@@ -71,6 +97,14 @@ public class CarService {
     return GetCar.to(car);
   }
 
+  /**
+   * Updates a car and saves it in the database
+   *
+   * @param id represents the ID of the car
+   * @param patch {@link PatchCar}
+   * @return {@link GetCar} updated car
+   * @throws EntityNotFoundException when a car with this ID is not present in the database
+   */
   public GetCar updateCar(Long id, PatchCar patch) {
     Car car =
         carRepository
@@ -86,6 +120,14 @@ public class CarService {
     return GetCar.to(car);
   }
 
+  /**
+   * Soft-deletes a car
+   *
+   * <p>The field isDeleted of {@link Car} will be set to true when deleted
+   *
+   * @param id represents the id of the car
+   * @throws EntityNotFoundException when a car with this ID is not present in the database
+   */
   public void deleteCar(Long id) {
     Car car =
         carRepository
@@ -98,6 +140,16 @@ public class CarService {
     carRepository.save(car);
   }
 
+  /**
+   * Returns lease rate
+   *
+   * @param carId represent the ID of the car
+   * @param duration duration of the lease contract
+   * @param interestRate interest rate on the lease contract
+   * @param mileage mileage a car has on it
+   * @return {@link GetLeaseRate}
+   * @throws EntityNotFoundException when a car with this ID is not present in the database
+   */
   public GetLeaseRate getLeaseRate(
       Long carId, Double duration, Double interestRate, Double mileage) {
     Car car =
@@ -119,27 +171,28 @@ public class CarService {
   /**
    * Calculates the lease rate of a car
    *
-   * <p>Formula: ((( mileage / 12 ) * duration ) / Nett price) + ((( Interest rate / 100 ) * Nett
-   * price) / 12 )
+   * <p>Formula: ((( mileage / 12 ) * duration ) / Nett price) + ((( Interest rate / 100 ) *
+   * Nettprice) / 12 )
    *
-   * @param mileage
-   * @param duration
-   * @param interestRate
-   * @param nettPrice
+   * @param duration duration of the lease contract
+   * @param interestRate interest rate on the lease contract
+   * @param mileage mileage a car has on it
+   * @param nettPrice nettPrice of the car
    * @return lease rate
    */
   public BigDecimal calculateLeaseRate(
       BigDecimal mileage, BigDecimal duration, BigDecimal interestRate, BigDecimal nettPrice) {
+
     // ((( mileage / 12 ) * duration ) / Nett price)
     BigDecimal mileagePerMonth = mileage.divide(BigDecimal.valueOf(12), RoundingMode.FLOOR);
     BigDecimal monthlyMileageDuration = mileagePerMonth.multiply(duration);
-    BigDecimal resultPartOne = monthlyMileageDuration.divide(nettPrice, 20, RoundingMode.FLOOR);
+    BigDecimal resultPartOne = monthlyMileageDuration.divide(nettPrice, 15, RoundingMode.FLOOR);
 
     // ((( Interest rate / 100 ) * Nett price) / 12 )
-    BigDecimal intRate = interestRate.divide(BigDecimal.valueOf(100), 20, RoundingMode.FLOOR);
+    BigDecimal intRate = interestRate.divide(BigDecimal.valueOf(100), 15, RoundingMode.FLOOR);
     BigDecimal intRateNetPrice = intRate.multiply(nettPrice);
     BigDecimal resultPartTwo =
-        intRateNetPrice.divide(BigDecimal.valueOf(12), 20, RoundingMode.FLOOR);
+        intRateNetPrice.divide(BigDecimal.valueOf(12), 15, RoundingMode.FLOOR);
 
     // add part 1 and part 2
     BigDecimal result = resultPartOne.add(resultPartTwo);
@@ -148,12 +201,13 @@ public class CarService {
   }
 
   /**
-   * Checks if a car with this make, model and version is already present in the database. Soft
-   * deleted Cars are not taken into consideration
+   * Checks if a car with the same make, model and version is present in the database
    *
-   * @param make
-   * @param model
-   * @param version
+   * <p>Does not take soft-deleted cars into consideration
+   *
+   * @param make represents the make of the car
+   * @param model represents the model of the car
+   * @param version represents the version of the car
    * @return true if a car with this make,model and version is present
    */
   public Boolean isRegistered(String make, String model, String version) {
@@ -162,10 +216,23 @@ public class CarService {
         .isPresent();
   }
 
+  /**
+   * Retrieves the authenticated user
+   *
+   * @return the authenticated {@link User}
+   */
   public User getLoggedInUser() {
     return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
+  /**
+   * Patches the car object
+   *
+   * <p>Updates the field in the car object provided by the patch
+   *
+   * @param car {@link Car} takes in the car object that needs to be patched
+   * @param patch {@link PatchCar} takes in the patch containing new values for the car
+   */
   public void updateCarFields(Car car, PatchCar patch) {
     if (patch.make() != null) {
       car.setMake(patch.make());

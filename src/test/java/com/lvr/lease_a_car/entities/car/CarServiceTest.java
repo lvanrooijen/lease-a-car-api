@@ -3,7 +3,6 @@ package com.lvr.lease_a_car.entities.car;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -25,8 +24,15 @@ class CarServiceTest {
   @Nested
   class calculateLeaseRateTest {
 
+    /*
+    https://blogs.oracle.com/javamagazine/post/four-common-pitfalls-of-the-bigdecimal-class-and-how-to-avoid-them
+           */
+
     @ParameterizedTest
     @MethodSource("getLeaseRateData")
+    // TODO test data nog een keer handmatig checken
+    // TODO deze lezen:
+    // https://blogs.oracle.com/javamagazine/post/four-common-pitfalls-of-the-bigdecimal-class-and-how-to-avoid-them
     void calculate_lease_rate_should_give_correct_values(
         BigDecimal mileage,
         BigDecimal duration,
@@ -47,43 +53,44 @@ class CarServiceTest {
               BigDecimal.valueOf(60),
               BigDecimal.valueOf(63000),
               BigDecimal.valueOf(4.5),
-              BigDecimal.valueOf(239.76)),
+              BigDecimal.valueOf(239.82)), // 239,8214285714286
           Arguments.of(
               BigDecimal.valueOf(15000),
               BigDecimal.valueOf(24),
               BigDecimal.valueOf(20000),
               BigDecimal.valueOf(5.0),
-              BigDecimal.valueOf(84.83)),
+              BigDecimal.valueOf(84.83)), // 84,83333333333333
           Arguments.of(
               BigDecimal.valueOf(10000),
               BigDecimal.valueOf(36),
               BigDecimal.valueOf(18000),
               BigDecimal.valueOf(3.5),
-              BigDecimal.valueOf(54.17)),
+              BigDecimal.valueOf(54.16)), // 54,16666666666667
           Arguments.of(
               BigDecimal.valueOf(20000),
               BigDecimal.valueOf(12),
               BigDecimal.valueOf(25000),
               BigDecimal.valueOf(6.0),
-              BigDecimal.valueOf(125.80)),
+              new BigDecimal("125.80")), // 125.8
           Arguments.of(
               BigDecimal.valueOf(12000),
               BigDecimal.valueOf(48),
               BigDecimal.valueOf(22000),
-              BigDecimal.valueOf(4.25),
-              BigDecimal.valueOf(80.10).setScale(2, RoundingMode.HALF_EVEN)),
+              BigDecimal.valueOf(4.25), // 80,09848484848487
+              BigDecimal.valueOf(80.09)),
           Arguments.of(
               BigDecimal.valueOf(8000),
               BigDecimal.valueOf(60),
               BigDecimal.valueOf(17500),
               BigDecimal.valueOf(2.75),
-              BigDecimal.valueOf(42.39)),
+              BigDecimal.valueOf(42.38)), // 42,38988095238095
           Arguments.of(
               BigDecimal.valueOf(18000),
               BigDecimal.valueOf(36),
               BigDecimal.valueOf(30000),
               BigDecimal.valueOf(5.5),
-              BigDecimal.valueOf(139.30).setScale(2, RoundingMode.HALF_EVEN)));
+              new BigDecimal("139.30") // 139.3
+              ));
     }
   }
 }

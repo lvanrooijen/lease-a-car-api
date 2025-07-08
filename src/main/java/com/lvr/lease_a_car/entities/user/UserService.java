@@ -10,12 +10,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/** Handles the business logic related to users */
 @Service
 @RequiredArgsConstructor
 public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
+  /**
+   * Creates a user
+   *
+   * @param body {@link PostUser} DTO
+   * @return {@link GetUser}
+   * @throws UserAlreadyRegisteredException if a user with this email address is present in the
+   *     database
+   * @throws InvalidUserRoleException if an invalid user role is passed
+   */
   public GetUser registerUser(PostUser body) {
     if (userRepository.findByEmailIgnoreCase(body.email()).isPresent()) {
       throw new UserAlreadyRegisteredException("This customer is already registered");
@@ -23,7 +33,7 @@ public class UserService {
 
     Role role = null;
     try {
-      role = Role.valueOf(body.role());
+      role = Role.valueOf(body.role().toUpperCase());
     } catch (IllegalArgumentException e) {
       throw new InvalidUserRoleException("Invalid role");
     }
@@ -41,37 +51,58 @@ public class UserService {
     return GetUser.to(user);
   }
 
-  public GetUser updateUser(Long customerId, PatchUser patch) {
-    User customer =
+  /**
+   * Updates a user and saves it in the database
+   *
+   * @param id represents the user id
+   * @param patch {@link PatchUser}
+   * @return {@link GetUser}
+   * @throws EntityNotFoundException when a user with this ID is not found
+   */
+  public GetUser updateUser(Long id, PatchUser patch) {
+    User user =
         userRepository
-            .findById(customerId)
+            .findById(id)
             .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        String.format("No customer with id %d found", customerId)));
+                () -> new EntityNotFoundException(String.format("No user with id %d found", id)));
 
-    if (patch.firstName() != null) {
-      customer.setFirstName(patch.firstName());
-    }
-    if (patch.lastName() != null) {
-      customer.setLastName(patch.lastName());
-    }
-    if (patch.email() != null) {
-      customer.setEmail(patch.email());
-    }
+    updateUserFields(user, patch);
 
-    userRepository.save(customer);
-    return GetUser.to(customer);
+    userRepository.save(user);
+    return GetUser.to(user);
   }
 
-  public void deleteUser(Long customerId) {
+  /**
+   * Deletes a user
+   *
+   * @param id represents user id
+   * @throws EntityNotFoundException when user ID is not present in the database
+   */
+  public void deleteUser(Long id) {
     userRepository
-        .findById(customerId)
+        .findById(id)
         .orElseThrow(
             () ->
                 new EntityNotFoundException(
-                    String.format(
-                        "Can't delete customer, No customer with id %d found", customerId)));
-    userRepository.deleteById(customerId);
+                    String.format("Can't delete user, user with id %d found", id)));
+    userRepository.deleteById(id);
+  }
+
+  /**
+   * Patches the user object
+   *
+   * @param user
+   * @param patch
+   */
+  public void updateUserFields(User user, PatchUser patch) {
+    if (patch.firstName() != null) {
+      user.setFirstName(patch.firstName());
+    }
+    if (patch.lastName() != null) {
+      user.setLastName(patch.lastName());
+    }
+    if (patch.email() != null) {
+      user.setEmail(patch.email());
+    }
   }
 }

@@ -7,11 +7,20 @@ import com.lvr.lease_a_car.exception.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/** Handles the business logic related to Customers */
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
   private final CustomerRepository customerRepository;
 
+  /**
+   * Creates a user
+   *
+   * <p>Creates a user and saves it in the database
+   *
+   * @param body {@link PostCustomer} request body containing details on the customer
+   * @return {@link GetCustomer} DTO containing customer information
+   */
   public GetCustomer createCustomer(PostCustomer body) {
     Customer customer =
         Customer.builder()
@@ -28,6 +37,14 @@ public class CustomerService {
     return GetCustomer.to(customer);
   }
 
+  /**
+   * Updates a customer
+   *
+   * @param id represents the customers ID
+   * @param patch {@link PatchCustomer} contains the new values for the customer
+   * @return {@link GetCustomer}
+   * @throws CustomerNotFoundException if a customer with this ID is not present in the database
+   */
   public GetCustomer patchCustomer(Long id, PatchCustomer patch) {
     Customer customer =
         customerRepository
@@ -40,6 +57,12 @@ public class CustomerService {
     return GetCustomer.to(customer);
   }
 
+  /**
+   * Deletes a customer in the database
+   *
+   * @param id represents the ID of the customer
+   * @throws CustomerNotFoundException when a customer with this ID is not present in the database
+   */
   public void deleteCustomer(Long id) {
     customerRepository
         .findById(id)
@@ -48,6 +71,12 @@ public class CustomerService {
     customerRepository.deleteById(id);
   }
 
+  /**
+   * Updates the fields of a customer
+   *
+   * @param customer Customer object to be updated
+   * @param patch {@link PatchCustomer} contains new values for the customer
+   */
   public void updateFields(Customer customer, PatchCustomer patch) {
     if (patch.name() != null) {
       customer.setName(patch.name());

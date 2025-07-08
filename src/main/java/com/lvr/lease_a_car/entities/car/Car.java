@@ -7,6 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 
+/**
+ * Represents a car in the application
+ *
+ * <p>When a car is deleted it's isDeleted field will be set to true
+ */
 @Entity
 @Table(name = "cars")
 @Getter

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** Represents a customer of the app */
 @Entity
 @Getter
 @Setter
