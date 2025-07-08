@@ -116,19 +116,35 @@ public class CarService {
     return GetLeaseRate.to(leaseRate, car);
   }
 
-  private BigDecimal calculateLeaseRate(
+  /**
+   * Calculates the lease rate of a car
+   *
+   * <p>Formula: ((( mileage / 12 ) * duration ) / Nett price) + ((( Interest rate / 100 ) * Nett
+   * price) / 12 )
+   *
+   * @param mileage
+   * @param duration
+   * @param interestRate
+   * @param nettPrice
+   * @return lease rate
+   */
+  public BigDecimal calculateLeaseRate(
       BigDecimal mileage, BigDecimal duration, BigDecimal interestRate, BigDecimal nettPrice) {
-    // ((( mileage / 12 ) * duration ) / Nett price) +
+    // ((( mileage / 12 ) * duration ) / Nett price)
+    BigDecimal mileagePerMonth = mileage.divide(BigDecimal.valueOf(12), RoundingMode.FLOOR);
+    BigDecimal monthlyMileageDuration = mileagePerMonth.multiply(duration);
+    BigDecimal resultPartOne = monthlyMileageDuration.divide(nettPrice, 20, RoundingMode.FLOOR);
+
     // ((( Interest rate / 100 ) * Nett price) / 12 )
-    return mileage
-        .divide(BigDecimal.valueOf(12), RoundingMode.CEILING)
-        .multiply(duration)
-        .divide(nettPrice, RoundingMode.CEILING)
-        .add(
-            interestRate
-                .divide(BigDecimal.valueOf(100), RoundingMode.CEILING)
-                .multiply(nettPrice)
-                .divide(BigDecimal.valueOf(12), 2, RoundingMode.CEILING));
+    BigDecimal intRate = interestRate.divide(BigDecimal.valueOf(100), 20, RoundingMode.FLOOR);
+    BigDecimal intRateNetPrice = intRate.multiply(nettPrice);
+    BigDecimal resultPartTwo =
+        intRateNetPrice.divide(BigDecimal.valueOf(12), 20, RoundingMode.FLOOR);
+
+    // add part 1 and part 2
+    BigDecimal result = resultPartOne.add(resultPartTwo);
+
+    return result.setScale(2, RoundingMode.FLOOR);
   }
 
   /**
