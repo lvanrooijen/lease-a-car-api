@@ -22,24 +22,6 @@ You can access all the API endpoints and documentation via Swagger UI at:
 
          http://localhost:8080/swagger-ui/index.html
 
-Users:
-- `POST /api/v1/users/register` 
-- `DELETE /api/v1/users/{id}`      (admin access only)
-- `PATCH /api/v1/users/{id}`      
-
-Customers:
-- `POST /api/v1/customers`               
-- `DELETE /api/v1/customers/{id}`      (admin & broker access only)
-- `PATCH /api/v1/customer/{id}`      (admin & broker access only)
-
-Cars:
-- `GET /api/v1/cars`      (soft deleted cars show for admin only)
-- `POST /api/v1/cars`      (admin access only)
-- `GET /api/v1/cars/{id}` (soft deleted items show for admin only)
-- `DELETE /api/v1/cars/{id}`      (admin access only)
-- `PATCH /api/v1/cars/{id}`      (admin access only)
-- `GET /api/v1/cars/lease-rate` requires query paramaters
-
 ## Structure & Design
 
 ### *This project contains the following directories:*
@@ -71,8 +53,6 @@ Cars:
 
 ## Seeded Users
 Users for testing have been seeded, you can login with the following credentials:
-
-~For safety reasons a very secure password has been carefully selected~
 
 1. **Broker**:
    - **Username**: `broker@email.com`
