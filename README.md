@@ -7,11 +7,12 @@
 
 ## How to run
 
-1. Clone the project:
+1.  Clone the project:
 
               git clone https://github.com/lvanrooijen/lease-a-car-api.git
-2. `mvn install`
-3. `mvn spring-boot:run`
+
+2.  `mvn install`
+3.  `mvn spring-boot:run`
 
     - The API will be running on http://localhost:8080
 
@@ -31,13 +32,13 @@ Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
 
 ## Structure & Design
 
-### *This project contains the following directories:*
+### _This project contains the following directories:_
 
-#### *`exception` folder containing custom exceptions and a global exception handler*
+#### _`exception` folder containing custom exceptions and a global exception handler_
 
-#### *`security` folder for Spring Security related classes*
+#### _`security` folder for Spring Security related classes_
 
-#### *`entity` folder which contains:*
+#### _`entity` folder which contains:_
 
 - `Entity` : Represents the entity/model (Car, Customer)
 
@@ -48,13 +49,13 @@ Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
 - `Repository` : Handles querying the database
 
 - `DTO Folder` : Folder containing DTOs I often use:
-    * `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity
-      to this DTO.
-    * `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method
-      `from()` to convert the DTO to an entity.
-    * `Patch[name of entity]`: Used as a request body for patching an entity.
+  - `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity
+    to this DTO.
+  - `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method
+    `from()` to convert the DTO to an entity.
+  - `Patch[name of entity]`: Used as a request body for patching an entity.
 
-#### *`utility` folder containing the following folders:*
+#### _`utility` folder containing the following folders:_
 
 - `annotations` : Contains custom annotations for validation, primarily used for validating values in request bodies
   through DTOs.
@@ -66,18 +67,18 @@ Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
 Users for testing have been seeded, you can login with the following credentials:
 
 1. **Broker**:
-    - **Username**: `broker@email.com`
-    - **Password**: `SecurePassword123!`
-    - **Role**: `ROLE_BROKER`
+
+   - **Username**: `broker@email.com`
+   - **Password**: `SecurePassword123!`
+   - **Role**: `ROLE_BROKER`
 
 2. **Employee**:
-    - **Username**: `employee@email.com`
-    - **Password**: `SecurePassword123!`
-    - **Role**: `ROLE_EMPLOYEE`
 
-2. **Admin**:
-    - **Username**: `admin@email.com`
-    - **Password**: `SecurePassword123!`
-    - **Role**: `ROLE_ADMIN`
+   - **Username**: `employee@email.com`
+   - **Password**: `SecurePassword123!`
+   - **Role**: `ROLE_EMPLOYEE`
 
-
+3. **Admin**:
+   - **Username**: `admin@email.com`
+   - **Password**: `SecurePassword123!`
+   - **Role**: `ROLE_ADMIN`
