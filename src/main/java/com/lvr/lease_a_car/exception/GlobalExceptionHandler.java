@@ -1,6 +1,8 @@
 package com.lvr.lease_a_car.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +13,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -43,6 +47,23 @@ public class GlobalExceptionHandler {
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
     problemDetail.setProperty("errors", errors);
     return problemDetail;
+  }
+
+  @ExceptionHandler(HandlerMethodValidationException.class)
+  public ProblemDetail handleHandlerMethodValidationException(HandlerMethodValidationException e) {
+    log.error("[HandlerMethodValidationException] detail: " + e.getMessage(), e);
+    List<Object> errors = Arrays.stream(e.getDetailMessageArguments()).toList();
+    ProblemDetail problemDetail =
+        ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid Query parameter");
+    problemDetail.setProperty("errors", errors);
+    return problemDetail;
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ProblemDetail handleMissingServletRequestParameterException(
+      MissingServletRequestParameterException e) {
+    log.error("[MissingServletRequestParameterException] " + e.getMessage(), e);
+    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 
   @ExceptionHandler(UsernameNotFoundException.class)

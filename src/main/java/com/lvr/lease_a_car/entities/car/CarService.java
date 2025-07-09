@@ -151,7 +151,7 @@ public class CarService {
    * @throws EntityNotFoundException when a car with this ID is not present in the database
    */
   public GetLeaseRate getLeaseRate(
-      Long carId, Double duration, Double interestRate, Double mileage) {
+      Long carId, String duration, Double interestRate, Double mileage) {
     Car car =
         carRepository
             .findById(carId)
@@ -161,7 +161,7 @@ public class CarService {
     BigDecimal leaseRate =
         calculateLeaseRate(
             BigDecimal.valueOf(mileage),
-            BigDecimal.valueOf(duration),
+            new BigDecimal(duration),
             BigDecimal.valueOf(interestRate),
             BigDecimal.valueOf(car.getNettPrice()));
 
@@ -183,21 +183,16 @@ public class CarService {
   public BigDecimal calculateLeaseRate(
       BigDecimal mileage, BigDecimal duration, BigDecimal interestRate, BigDecimal nettPrice) {
 
-    // ((( mileage / 12 ) * duration ) / Nett price)
-    BigDecimal mileagePerMonth = mileage.divide(BigDecimal.valueOf(12), RoundingMode.FLOOR);
-    BigDecimal monthlyMileageDuration = mileagePerMonth.multiply(duration);
-    BigDecimal resultPartOne = monthlyMileageDuration.divide(nettPrice, 15, RoundingMode.FLOOR);
-
-    // ((( Interest rate / 100 ) * Nett price) / 12 )
-    BigDecimal intRate = interestRate.divide(BigDecimal.valueOf(100), 15, RoundingMode.FLOOR);
-    BigDecimal intRateNetPrice = intRate.multiply(nettPrice);
-    BigDecimal resultPartTwo =
-        intRateNetPrice.divide(BigDecimal.valueOf(12), 15, RoundingMode.FLOOR);
-
-    // add part 1 and part 2
-    BigDecimal result = resultPartOne.add(resultPartTwo);
-
-    return result.setScale(2, RoundingMode.FLOOR);
+    return mileage
+        .divide(new BigDecimal("12"), RoundingMode.FLOOR)
+        .multiply(duration)
+        .divide(nettPrice, 15, RoundingMode.FLOOR)
+        .add(
+            interestRate
+                .divide(new BigDecimal("100"), 15, RoundingMode.FLOOR)
+                .multiply(nettPrice)
+                .divide(new BigDecimal("12"), 15, RoundingMode.FLOOR))
+        .setScale(2, RoundingMode.FLOOR);
   }
 
   /**

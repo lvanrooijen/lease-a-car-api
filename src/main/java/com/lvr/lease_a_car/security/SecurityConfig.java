@@ -32,7 +32,7 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(SecurityRoutes.getOpenPostPaths())
+                auth.requestMatchers(SecurityRoutes.getNonAuthenticatedEndpoints())
                     .permitAll()
                     .anyRequest()
                     .authenticated())

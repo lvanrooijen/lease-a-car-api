@@ -23,16 +23,8 @@ class CarServiceTest {
   /** Test cases for the calculateLeaseRateMethod */
   @Nested
   class calculateLeaseRateTest {
-
-    /*
-    https://blogs.oracle.com/javamagazine/post/four-common-pitfalls-of-the-bigdecimal-class-and-how-to-avoid-them
-           */
-
     @ParameterizedTest
     @MethodSource("getLeaseRateData")
-    // TODO test data nog een keer handmatig checken
-    // TODO deze lezen:
-    // https://blogs.oracle.com/javamagazine/post/four-common-pitfalls-of-the-bigdecimal-class-and-how-to-avoid-them
     void calculate_lease_rate_should_give_correct_values(
         BigDecimal mileage,
         BigDecimal duration,

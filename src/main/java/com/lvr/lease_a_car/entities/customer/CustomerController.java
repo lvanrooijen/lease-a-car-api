@@ -4,6 +4,8 @@ import com.lvr.lease_a_car.entities.customer.dto.GetCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PatchCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PostCustomer;
 import com.lvr.lease_a_car.utils.constants.routes.Endpoints;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +14,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/** handles http requests related to customers */
 @RestController
 @RequestMapping(Endpoints.CUSTOMERS)
 @RequiredArgsConstructor
 public class CustomerController {
   private final CustomerService customerService;
 
+  @Operation(summary = "create a customer", description = "permissions: EMPLOYEE, BROKER & ADMIN")
+  @ApiResponse(responseCode = "201", description = "customer created")
+  @ApiResponse(responseCode = "400", description = "invalid request body")
   @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
   @PostMapping("/register")
   public ResponseEntity<GetCustomer> createCustomer(@Valid @RequestBody PostCustomer body) {
@@ -30,6 +36,10 @@ public class CustomerController {
     return ResponseEntity.created(location).body(customer);
   }
 
+  @Operation(summary = "update a customer", description = "permissions: BROKER & ADMIN")
+  @ApiResponse(responseCode = "200", description = "customer updated")
+  @ApiResponse(responseCode = "404", description = "customer not found")
+  @ApiResponse(responseCode = "400", description = "invalid request body")
   @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN')")
   @PatchMapping("/{id}")
   public ResponseEntity<GetCustomer> updateCustomer(
@@ -38,6 +48,9 @@ public class CustomerController {
     return ResponseEntity.ok(customer);
   }
 
+  @Operation(summary = "delete a customer", description = "permissions: BROKER & ADMIN")
+  @ApiResponse(responseCode = "200", description = "customer deleted")
+  @ApiResponse(responseCode = "404", description = "customer not found")
   @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
