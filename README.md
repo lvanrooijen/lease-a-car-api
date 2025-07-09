@@ -12,7 +12,7 @@
 2. `mvn install`
 3. `mvn spring-boot:run`
    or
-   ![image](https://github.com/user-attachments/assets/c448a1c6-24f2-438a-9763-df3f5765c057)
+   [![image](https://github.com/user-attachments/assets/c448a1c6-24f2-438a-9763-df3f5765c057)](https://raw.githubusercontent.com/lvanrooijen/lease-a-car-api/refs/heads/main/src/main/resources/static/didi.png?token=GHSAT0AAAAAADHBG2OOILXE4X2WMQ6HSD3K2DOJUAQ)
 
       - The API will be running on http://localhost:8080
 
