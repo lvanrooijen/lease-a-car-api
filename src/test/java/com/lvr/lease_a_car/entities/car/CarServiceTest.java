@@ -4,28 +4,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /** Test cases for methods of the authentication service class */
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
 class CarServiceTest {
+
+  @Mock CarRepository carRepository;
+
   @InjectMocks private CarService carService;
 
   /** Test cases for the calculateLeaseRateMethod */
   @Nested
-  class calculateLeaseRateTest {
+  class CalculateLeaseRateTest {
     @ParameterizedTest
     @MethodSource("getLeaseRateData")
-    void calculate_lease_rate_should_give_correct_values(
+    void should_output_correct_values(
         BigDecimal mileage,
         BigDecimal duration,
         BigDecimal nettPrice,
@@ -84,5 +86,6 @@ class CarServiceTest {
               new BigDecimal("139.30") // 139.3
               ));
     }
+  
   }
 }

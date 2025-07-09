@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
   /** Fall back exception handler, handles all the uncaught exceptions */
   @ExceptionHandler(Exception.class)
   public ProblemDetail handleException(Exception e) {
-    log.error("[FALLBACK] " + e.getMessage(), e);
+    log.error("[FALLBACK] {}", e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(
         HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred");
   }
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(HandlerMethodValidationException.class)
   public ProblemDetail handleHandlerMethodValidationException(HandlerMethodValidationException e) {
-    log.error("[HandlerMethodValidationException] detail: " + e.getMessage(), e);
+    log.warn("[HandlerMethodValidationException] detail: {}", e.getMessage(), e);
     List<Object> errors = Arrays.stream(e.getDetailMessageArguments()).toList();
     ProblemDetail problemDetail =
         ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid Query parameter");
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ProblemDetail handleMissingServletRequestParameterException(
       MissingServletRequestParameterException e) {
-    log.error("[MissingServletRequestParameterException] " + e.getMessage(), e);
+    log.warn("[MissingServletRequestParameterException] {}", e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(AccessDeniedException.class)
   public ProblemDetail handleAccessDeniedException(Exception e) {
-    log.warn("[AccessDeniedException] " + e.getMessage(), e);
+    log.warn("[AccessDeniedException] {}", e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(
         HttpStatus.FORBIDDEN, "You dont have permission to access this resource");
   }
@@ -100,7 +100,13 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ProblemDetail handleHttpMessageNotReadableException(Exception e) {
-    log.warn("[HttpMessageNotReadableException] " + e.getMessage(), e);
+    log.warn("[HttpMessageNotReadableException] {}", e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "invalid request body");
+  }
+
+  @ExceptionHandler(InvalidInputException.class)
+  public ProblemDetail handleInvalidInputException(Exception e) {
+    log.warn("[InvalidInputException] {}", e.getMessage(), e);
+    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 }

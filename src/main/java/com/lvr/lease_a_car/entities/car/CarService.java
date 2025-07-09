@@ -21,6 +21,35 @@ public class CarService {
   private final CarRepository carRepository;
 
   /**
+   * Creates a Car
+   *
+   * <p>Creates a car object and saves it in the database
+   *
+   * @param postCar {@link PostCar}
+   * @return GetCar {@link GetCar}
+   * @throws ExistingCarException when a car with this ID is not present in the database
+   */
+  public GetCar createCar(PostCar postCar) {
+    if (isRegisteredMakeModelVersion(postCar.make(), postCar.model(), postCar.version())) {
+      throw new ExistingCarException(
+          "A car with this make, model and version is already present in the database");
+    }
+    Car car =
+        Car.builder()
+            .model(postCar.model())
+            .make(postCar.make())
+            .co2Emission(postCar.co2Emission())
+            .grossPrice(postCar.grossPrice())
+            .nettPrice(postCar.nettPrice())
+            .numberOfDoors(postCar.numberOfDoors())
+            .version(postCar.version())
+            .build();
+
+    carRepository.save(car);
+    return GetCar.to(car);
+  }
+
+  /**
    * Retrieves a car by ID
    *
    * <p>If the authenticated user has admin role, this also returns soft-deleted cars
@@ -69,32 +98,32 @@ public class CarService {
   }
 
   /**
-   * Creates a Car
+   * Returns lease rate
    *
-   * <p>Creates a car object and saves it in the database
-   *
-   * @param postCar {@link PostCar}
-   * @return GetCar {@link GetCar}
-   * @throws ExistingCarException when a car with this ID is not present in the database
+   * @param carId represent the ID of the car
+   * @param duration duration of the lease contract
+   * @param interestRate interest rate on the lease contract
+   * @param mileage mileage a car has on it
+   * @return {@link GetLeaseRate}
+   * @throws EntityNotFoundException when a car with this ID is not present in the database
    */
-  public GetCar createCar(PostCar postCar) {
-    if (isRegistered(postCar.make(), postCar.model(), postCar.version())) {
-      throw new ExistingCarException(
-          "A car with this make, model and version is already present in the database");
-    }
-    Car car =
-        Car.builder()
-            .model(postCar.model())
-            .make(postCar.make())
-            .co2Emission(postCar.co2Emission())
-            .grossPrice(postCar.grossPrice())
-            .nettPrice(postCar.nettPrice())
-            .numberOfDoors(postCar.numberOfDoors())
-            .version(postCar.version())
-            .build();
+  public GetLeaseRate getLeaseRate(
+      Long carId, String duration, String interestRate, String mileage) {
 
-    carRepository.save(car);
-    return GetCar.to(car);
+    Car car =
+        carRepository
+            .findById(carId)
+            .orElseThrow(
+                () -> new EntityNotFoundException("Car with id " + carId + " can not be found"));
+
+    BigDecimal leaseRate =
+        calculateLeaseRate(
+            new BigDecimal(mileage),
+            new BigDecimal(duration),
+            new BigDecimal(interestRate),
+            BigDecimal.valueOf(car.getNettPrice()));
+
+    return GetLeaseRate.to(leaseRate, car);
   }
 
   /**
@@ -141,34 +170,6 @@ public class CarService {
   }
 
   /**
-   * Returns lease rate
-   *
-   * @param carId represent the ID of the car
-   * @param duration duration of the lease contract
-   * @param interestRate interest rate on the lease contract
-   * @param mileage mileage a car has on it
-   * @return {@link GetLeaseRate}
-   * @throws EntityNotFoundException when a car with this ID is not present in the database
-   */
-  public GetLeaseRate getLeaseRate(
-      Long carId, String duration, Double interestRate, Double mileage) {
-    Car car =
-        carRepository
-            .findById(carId)
-            .orElseThrow(
-                () -> new EntityNotFoundException("Car with id " + carId + " can not be found"));
-
-    BigDecimal leaseRate =
-        calculateLeaseRate(
-            BigDecimal.valueOf(mileage),
-            new BigDecimal(duration),
-            BigDecimal.valueOf(interestRate),
-            BigDecimal.valueOf(car.getNettPrice()));
-
-    return GetLeaseRate.to(leaseRate, car);
-  }
-
-  /**
    * Calculates the lease rate of a car
    *
    * <p>Formula: ((( mileage / 12 ) * duration ) / Nett price) + ((( Interest rate / 100 ) *
@@ -184,15 +185,15 @@ public class CarService {
       BigDecimal mileage, BigDecimal duration, BigDecimal interestRate, BigDecimal nettPrice) {
 
     return mileage
-        .divide(new BigDecimal("12"), RoundingMode.FLOOR)
+        .divide(new BigDecimal("12"), RoundingMode.HALF_EVEN)
         .multiply(duration)
-        .divide(nettPrice, 15, RoundingMode.FLOOR)
+        .divide(nettPrice, 15, RoundingMode.HALF_DOWN)
         .add(
             interestRate
-                .divide(new BigDecimal("100"), 15, RoundingMode.FLOOR)
+                .divide(new BigDecimal("100"), 15, RoundingMode.HALF_EVEN)
                 .multiply(nettPrice)
-                .divide(new BigDecimal("12"), 15, RoundingMode.FLOOR))
-        .setScale(2, RoundingMode.FLOOR);
+                .divide(new BigDecimal("12"), 15, RoundingMode.HALF_EVEN))
+        .setScale(2, RoundingMode.HALF_EVEN);
   }
 
   /**
@@ -205,7 +206,7 @@ public class CarService {
    * @param version represents the version of the car
    * @return true if a car with this make,model and version is present
    */
-  public Boolean isRegistered(String make, String model, String version) {
+  public Boolean isRegisteredMakeModelVersion(String make, String model, String version) {
     return carRepository
         .findByMakeAndModelAndVersionAndIsDeletedFalse(make, model, version)
         .isPresent();
