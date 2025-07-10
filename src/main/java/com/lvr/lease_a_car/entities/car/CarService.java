@@ -187,7 +187,7 @@ public class CarService {
     return mileage
         .divide(new BigDecimal("12"), RoundingMode.HALF_EVEN)
         .multiply(duration)
-        .divide(nettPrice, 15, RoundingMode.HALF_DOWN)
+        .divide(nettPrice, 15, RoundingMode.HALF_EVEN)
         .add(
             interestRate
                 .divide(new BigDecimal("100"), 15, RoundingMode.HALF_EVEN)
