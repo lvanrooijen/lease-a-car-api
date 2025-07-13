@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.lvr.lease_a_car.entities.car.dto.GetCar;
 import com.lvr.lease_a_car.entities.car.dto.GetLeaseRate;
 import com.lvr.lease_a_car.utils.constants.routes.LeaseRateConstants;
 import jakarta.persistence.EntityNotFoundException;
@@ -90,7 +91,7 @@ class CarControllerTest {
 
       return Stream.of(
           // interestRate
-          Arguments.of("a", duration, mileage),
+          Arguments.of("q", duration, mileage),
           Arguments.of("-1", duration, mileage),
           Arguments.of("101", duration, mileage),
           Arguments.of("", duration, mileage),
@@ -139,13 +140,22 @@ class CarControllerTest {
 
     @Test
     void getCarById_happy_path() throws Exception {
-      Mockito.when(carRepository.findById(Mockito.anyLong()))
-          .thenReturn(java.util.Optional.ofNullable(car));
+      Mockito.when(carService.getCarById(1L))
+          .thenReturn(
+              new GetCar(
+                  1L,
+                  car.getMake(),
+                  car.getModel(),
+                  car.getVersion(),
+                  car.getNumberOfDoors(),
+                  car.getCo2Emission(),
+                  car.getGrossPrice(),
+                  car.getNettPrice()));
 
       mockMvc
           .perform(get(endpoint + "/1").accept(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.carId").value(1));
+          .andExpect(jsonPath("$.id").value(1));
     }
 
     @Test
