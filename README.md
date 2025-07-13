@@ -30,6 +30,9 @@ In a real-world scenario, I would ask for more information.
 
 Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
 
+The `post-submission-improvements` branch contains changes made after the deadline passed. 
+These changes are not part of the original submission and are intended as personal improvements only.
+
 ## Structure & Design
 
 ### _This project contains the following directories:_
