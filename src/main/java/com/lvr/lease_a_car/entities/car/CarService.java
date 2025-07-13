@@ -6,13 +6,26 @@ import com.lvr.lease_a_car.entities.car.dto.PatchCar;
 import com.lvr.lease_a_car.entities.car.dto.PostCar;
 import com.lvr.lease_a_car.entities.user.User;
 import com.lvr.lease_a_car.exception.ExistingCarException;
+import com.lvr.lease_a_car.exception.UploadCarsException;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import jakarta.persistence.EntityNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /** Handles the business logic related to cars */
 @Service
@@ -251,5 +264,75 @@ public class CarService {
     if (patch.nettPrice() != null) {
       car.setNettPrice(patch.nettPrice());
     }
+  }
+
+  /**
+   * uploads cars from a csv file to the database
+   *
+   * @param file csv file containing car data
+   * @return amount of added cars
+   */
+  public Integer uploadCars(MultipartFile file) {
+    Set<Car> cars;
+    try {
+      cars = parseCsv(file);
+    } catch (IOException e) {
+      throw new UploadCarsException("Failed to convert csv file");
+    }
+    carRepository.saveAll(cars);
+    return cars.size();
+  }
+
+  /**
+   * reads the csv file and maps the cars to a set
+   *
+   * @param file csv file containing car data
+   * @return {@link Car} set of cars extracted from the csv file
+   * @throws IOException when an error occurs reading the file
+   */
+  private Set<Car> parseCsv(MultipartFile file) throws IOException {
+    try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+      HeaderColumnNameMappingStrategy<CarCsvRepresentation> strategy =
+          new HeaderColumnNameMappingStrategy<>();
+      strategy.setType(CarCsvRepresentation.class);
+      CsvToBean<CarCsvRepresentation> csvToBean =
+          new CsvToBeanBuilder<CarCsvRepresentation>(reader)
+              .withSeparator(';')
+              .withMappingStrategy(strategy)
+              .withIgnoreEmptyLine(true)
+              .withIgnoreLeadingWhiteSpace(true)
+              .build();
+
+      return csvToBean.parse().stream()
+          .map(
+              csvLine ->
+                  Car.builder()
+                      .make(csvLine.getMake())
+                      .model(csvLine.getModel())
+                      .version(csvLine.getVersion())
+                      .numberOfDoors(csvLine.getNumberOfDoors())
+                      .grossPrice(convertToDouble("grossPrice", csvLine.getGrossPrice()))
+                      .nettPrice(convertToDouble("nettPrice", csvLine.getNettPrice()))
+                      .build())
+          .collect(Collectors.toSet());
+    }
+  }
+
+  /**
+   * method that converts a string into a double value
+   *
+   * @param type type of column that is being converted
+   * @param number number that needs to be converted to a double
+   * @return converted number as a double value
+   */
+  public double convertToDouble(String type, String number) {
+    NumberFormat formatter = NumberFormat.getInstance();
+    double value;
+    try {
+      value = formatter.parse(number).doubleValue();
+    } catch (ParseException e) {
+      throw new UploadCarsException("invalid value for " + type + " failed to convert: " + number);
+    }
+    return value;
   }
 }

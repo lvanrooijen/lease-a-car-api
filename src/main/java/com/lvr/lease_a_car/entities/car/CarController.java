@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /** Handles http requests related to car */
@@ -133,5 +134,12 @@ public class CarController {
   public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
     carService.deleteCar(id);
     return ResponseEntity.ok().build();
+  }
+
+  @PostMapping(
+      value = "upload-cars",
+      consumes = {"multipart/form-data"})
+  public ResponseEntity<Integer> uploadCars(@RequestPart("file") MultipartFile file) {
+    return ResponseEntity.ok(carService.uploadCars(file));
   }
 }
