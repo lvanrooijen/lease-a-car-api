@@ -270,9 +270,8 @@ public class CarService {
    * uploads cars from a csv file to the database
    *
    * @param file csv file containing car data
-   * @return amount of added cars
    */
-  public Integer uploadCars(MultipartFile file) {
+  public void uploadCars(MultipartFile file) {
     Set<Car> cars;
     try {
       cars = parseCsv(file);
@@ -280,7 +279,6 @@ public class CarService {
       throw new UploadCarsException("Failed to convert csv file");
     }
     carRepository.saveAll(cars);
-    return cars.size();
   }
 
   /**

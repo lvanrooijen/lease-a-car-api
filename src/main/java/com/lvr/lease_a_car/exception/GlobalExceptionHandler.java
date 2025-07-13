@@ -116,4 +116,11 @@ public class GlobalExceptionHandler {
     return ProblemDetail.forStatusAndDetail(
         HttpStatus.BAD_REQUEST, "Failed to upload cars, invalid csv file");
   }
+
+  @ExceptionHandler(FailedLoginException.class)
+  public ProblemDetail handleFailedLoginException(Exception e) {
+    log.warn("[FailedLoginException] {}", e.getMessage(), e);
+    return ProblemDetail.forStatusAndDetail(
+        HttpStatus.BAD_REQUEST, "Invalid username and/or password");
+  }
 }
