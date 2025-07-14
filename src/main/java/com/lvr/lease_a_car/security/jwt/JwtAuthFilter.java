@@ -43,6 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     if (SecurityContextHolder.getContext().getAuthentication() != null) {
       filterChain.doFilter(request, response);
+      return;
     }
 
     if (requestHasValidAuthHeader(request)) {
