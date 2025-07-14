@@ -1,5 +1,6 @@
 package com.lvr.lease_a_car.entities.customer;
 
+import com.lvr.lease_a_car.entities.customer.dto.CustomerMapper;
 import com.lvr.lease_a_car.entities.customer.dto.GetCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PatchCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PostCustomer;
@@ -12,29 +13,20 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomerService {
   private final CustomerRepository customerRepository;
+  private final CustomerMapper customerMapper;
 
   /**
    * Creates a user
    *
    * <p>Creates a user and saves it in the database
    *
-   * @param body {@link PostCustomer} request body containing details on the customer
+   * @param postCustomer {@link PostCustomer} request body containing details on the customer
    * @return {@link GetCustomer} DTO containing customer information
    */
-  public GetCustomer createCustomer(PostCustomer body) {
-    Customer customer =
-        Customer.builder()
-            .name(body.name())
-            .street(body.street())
-            .houseNumber(Integer.parseInt(body.houseNumber()))
-            .houseNumberAddition(body.houseNumberAddition())
-            .zipcode(body.zipcode())
-            .city(body.city())
-            .email(body.email())
-            .phoneNumber(body.phoneNumber())
-            .build();
+  public GetCustomer createCustomer(PostCustomer postCustomer) {
+    Customer customer = customerMapper.toCustomerEntity(postCustomer);
     customerRepository.save(customer);
-    return GetCustomer.to(customer);
+    return customerMapper.toGetCustomerDto(customer);
   }
 
   /**
@@ -51,10 +43,9 @@ public class CustomerService {
             .findById(id)
             .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
 
-    updateFields(customer, patch);
-
+    customerMapper.updateCustomerFields(customer, patch);
     customerRepository.save(customer);
-    return GetCustomer.to(customer);
+    return customerMapper.toGetCustomerDto(customer);
   }
 
   /**
@@ -69,38 +60,5 @@ public class CustomerService {
         .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
 
     customerRepository.deleteById(id);
-  }
-
-  /**
-   * Updates the fields of a customer
-   *
-   * @param customer Customer object to be updated
-   * @param patch {@link PatchCustomer} contains new values for the customer
-   */
-  public void updateFields(Customer customer, PatchCustomer patch) {
-    if (patch.name() != null) {
-      customer.setName(patch.name());
-    }
-    if (patch.street() != null) {
-      customer.setStreet(patch.street());
-    }
-    if (patch.houseNumber() != null) {
-      customer.setHouseNumber(Integer.parseInt(patch.houseNumber()));
-    }
-    if (patch.houseNumberAddition() != null) {
-      customer.setHouseNumberAddition(patch.houseNumberAddition());
-    }
-    if (patch.zipcode() != null) {
-      customer.setZipcode(patch.zipcode());
-    }
-    if (patch.city() != null) {
-      customer.setCity(patch.city());
-    }
-    if (patch.email() != null) {
-      customer.setEmail(patch.email());
-    }
-    if (patch.phoneNumber() != null) {
-      customer.setPhoneNumber(patch.phoneNumber());
-    }
   }
 }

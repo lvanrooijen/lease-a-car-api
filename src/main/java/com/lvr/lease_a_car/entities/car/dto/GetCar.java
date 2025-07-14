@@ -1,6 +1,5 @@
 package com.lvr.lease_a_car.entities.car.dto;
 
-import com.lvr.lease_a_car.entities.car.Car;
 
 /**
  * Car DTO containing details returned in HTTP-requests
@@ -24,22 +23,4 @@ public record GetCar(
     Integer numberOfDoors,
     Double co2Emission,
     Double grossPrice,
-    Double nettPrice) {
-  /**
-   * Converts a {@link Car} to a GetCar DTO
-   *
-   * @param car {@link Car} Car entity to be converted to dto
-   * @return GetCar DTO
-   */
-  public static GetCar to(Car car) {
-    return new GetCar(
-        car.getId(),
-        car.getMake(),
-        car.getModel(),
-        car.getVersion(),
-        car.getNumberOfDoors(),
-        car.getCo2Emission(),
-        car.getGrossPrice(),
-        car.getNettPrice());
-  }
-}
+    Double nettPrice) {}

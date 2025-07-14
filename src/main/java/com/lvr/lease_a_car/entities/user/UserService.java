@@ -20,6 +20,7 @@ public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
+  private final UserMapper userMapper;
 
   /**
    * Creates a user
@@ -72,10 +73,9 @@ public class UserService implements UserDetailsService {
             .orElseThrow(
                 () -> new EntityNotFoundException(String.format("No user with id %d found", id)));
 
-    updateUserFields(user, patch);
-
+    userMapper.updateUserFields(user, patch);
     userRepository.save(user);
-    return GetUser.to(user);
+    return userMapper.toGetUserDto(user);
   }
 
   /**
@@ -94,24 +94,6 @@ public class UserService implements UserDetailsService {
     userRepository.deleteById(id);
   }
 
-  /**
-   * Patches the user object
-   *
-   * @param user
-   * @param patch
-   */
-  public void updateUserFields(User user, PatchUser patch) {
-    if (patch.firstName() != null) {
-      user.setFirstName(patch.firstName());
-    }
-    if (patch.lastName() != null) {
-      user.setLastName(patch.lastName());
-    }
-    if (patch.email() != null) {
-      user.setEmail(patch.email());
-    }
-  }
-
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     return userRepository.findByEmailIgnoreCase(username).orElse(null);
@@ -128,6 +110,6 @@ public class UserService implements UserDetailsService {
     }
 
     String token = jwtService.generateTokenForUser(user);
-    return new GetUserWithJwtToken(user.getId(), user.getUsername(), token);
+    return userMapper.toGetUserWithJwtToken(user, token);
   }
 }

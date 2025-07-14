@@ -1,9 +1,6 @@
 package com.lvr.lease_a_car.entities.car;
 
-import com.lvr.lease_a_car.entities.car.dto.GetCar;
-import com.lvr.lease_a_car.entities.car.dto.GetLeaseRate;
-import com.lvr.lease_a_car.entities.car.dto.PatchCar;
-import com.lvr.lease_a_car.entities.car.dto.PostCar;
+import com.lvr.lease_a_car.entities.car.dto.*;
 import com.lvr.lease_a_car.entities.user.User;
 import com.lvr.lease_a_car.exception.ExistingCarException;
 import com.lvr.lease_a_car.exception.UploadCarsException;
@@ -32,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class CarService {
   private final CarRepository carRepository;
+  private final CarMapper carMapper;
 
   /**
    * Creates a Car
@@ -47,19 +45,10 @@ public class CarService {
       throw new ExistingCarException(
           "A car with this make, model and version is already present in the database");
     }
-    Car car =
-        Car.builder()
-            .model(postCar.model())
-            .make(postCar.make())
-            .co2Emission(postCar.co2Emission())
-            .grossPrice(postCar.grossPrice())
-            .nettPrice(postCar.nettPrice())
-            .numberOfDoors(postCar.numberOfDoors())
-            .version(postCar.version())
-            .build();
+    Car car = carMapper.toCarEntity(postCar);
 
     carRepository.save(car);
-    return GetCar.to(car);
+    return carMapper.toGetCarDto(car);
   }
 
   /**
@@ -88,7 +77,7 @@ public class CarService {
               .orElseThrow(
                   () -> new EntityNotFoundException("Car by id " + id + " can not be found"));
     }
-    return GetCar.to(car);
+    return carMapper.toGetCarDto(car);
   }
 
   /**
@@ -107,7 +96,7 @@ public class CarService {
     } else {
       cars = carRepository.findAllByIsDeletedFalse();
     }
-    return cars.stream().map(GetCar::to).toList();
+    return cars.stream().map(carMapper::toGetCarDto).toList();
   }
 
   /**
@@ -157,9 +146,9 @@ public class CarService {
                         String.format(
                             "Failed to update car, Car with id %d can not be found", id)));
 
-    updateCarFields(car, patch);
+    carMapper.updateCarFields(car, patch);
     carRepository.save(car);
-    return GetCar.to(car);
+    return carMapper.toGetCarDto(car);
   }
 
   /**
@@ -232,38 +221,6 @@ public class CarService {
    */
   public User getLoggedInUser() {
     return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
-  /**
-   * Patches the car object
-   *
-   * <p>Updates the field in the car object provided by the patch
-   *
-   * @param car {@link Car} takes in the car object that needs to be patched
-   * @param patch {@link PatchCar} takes in the patch containing new values for the car
-   */
-  public void updateCarFields(Car car, PatchCar patch) {
-    if (patch.make() != null) {
-      car.setMake(patch.make());
-    }
-    if (patch.model() != null) {
-      car.setModel(patch.model());
-    }
-    if (patch.version() != null) {
-      car.setVersion(patch.version());
-    }
-    if (patch.numberOfDoors() != null) {
-      car.setNumberOfDoors(patch.numberOfDoors());
-    }
-    if (patch.co2Emission() != null) {
-      car.setCo2Emission(patch.co2Emission());
-    }
-    if (patch.grossPrice() != null) {
-      car.setGrossPrice(patch.grossPrice());
-    }
-    if (patch.nettPrice() != null) {
-      car.setNettPrice(patch.nettPrice());
-    }
   }
 
   /**
