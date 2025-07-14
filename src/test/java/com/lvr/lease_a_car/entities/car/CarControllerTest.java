@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.lvr.lease_a_car.entities.car.dto.GetCar;
 import com.lvr.lease_a_car.entities.car.dto.GetLeaseRate;
+import com.lvr.lease_a_car.entities.user.UserService;
+import com.lvr.lease_a_car.security.jwt.JwtService;
 import com.lvr.lease_a_car.utils.constants.routes.LeaseRateConstants;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
@@ -16,24 +18,27 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** Test cases for the car controller class */
-@WebMvcTest(
-    controllers = CarController.class,
-    excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = CarController.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class CarControllerTest {
   @Autowired MockMvc mockMvc;
 
+  @MockitoBean private UserService userService;
+  @MockitoBean JwtService jwtService;
   @MockitoBean private CarService carService;
   @MockitoBean private CarRepository carRepository;
 
   @Nested
+  @WithMockUser(
+      username = "admin@email.com",
+      roles = {"ADMIN"})
   class GetLeaseRateTest {
     Long carId = 1L;
     String duration = "12";
@@ -118,6 +123,9 @@ class CarControllerTest {
   }
 
   @Nested
+  @WithMockUser(
+      username = "admin@email.com",
+      roles = {"ADMIN"})
   class GetCarByIdTest {
     Car car;
     String endpoint;
