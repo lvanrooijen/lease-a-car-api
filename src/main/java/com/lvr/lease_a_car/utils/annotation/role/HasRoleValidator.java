@@ -1,7 +1,10 @@
 package com.lvr.lease_a_car.utils.annotation.role;
 
+import com.lvr.lease_a_car.entities.user.Role;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Validates a Role
@@ -15,18 +18,11 @@ public class HasRoleValidator implements ConstraintValidator<HasRole, String> {
     if (value == null || value.isBlank()) {
       return true;
     }
+    List<String> roles = Arrays.stream(Role.values()).map(Enum::name).toList();
 
-    setErrorMessage(context, "Role must be BROKER or EMPLOYEE");
+    setErrorMessage(context, "Invalid role, available roles: " + roles);
 
-    if ("BROKER".equals(value)) {
-      return true;
-    }
-
-    if ("EMPLOYEE".equals(value)) {
-      return true;
-    }
-
-    return false;
+    return roles.contains(value);
   }
 
   private void setErrorMessage(ConstraintValidatorContext context, String errorMessage) {
