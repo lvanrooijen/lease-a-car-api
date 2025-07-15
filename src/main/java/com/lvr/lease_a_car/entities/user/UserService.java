@@ -1,21 +1,26 @@
 package com.lvr.lease_a_car.entities.user;
 
-import com.lvr.lease_a_car.entities.user.dto.GetUser;
-import com.lvr.lease_a_car.entities.user.dto.PatchUser;
-import com.lvr.lease_a_car.entities.user.dto.PostUser;
+import com.lvr.lease_a_car.entities.user.dto.*;
+import com.lvr.lease_a_car.exception.FailedLoginException;
 import com.lvr.lease_a_car.exception.InvalidUserRoleException;
 import com.lvr.lease_a_car.exception.UserAlreadyRegisteredException;
+import com.lvr.lease_a_car.security.jwt.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /** Handles the business logic related to users */
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
+  private final UserMapper userMapper;
 
   /**
    * Creates a user
@@ -26,7 +31,7 @@ public class UserService {
    *     database
    * @throws InvalidUserRoleException if an invalid user role is passed
    */
-  public GetUser registerUser(PostUser body) {
+  public GetUserWithJwtToken registerUser(PostUser body) {
     if (userRepository.findByEmailIgnoreCase(body.email()).isPresent()) {
       throw new UserAlreadyRegisteredException("This customer is already registered");
     }
@@ -48,7 +53,9 @@ public class UserService {
             .build();
 
     userRepository.save(user);
-    return GetUser.to(user);
+
+    String token = jwtService.generateTokenForUser(user);
+    return new GetUserWithJwtToken(user.getId(), user.getUsername(), token);
   }
 
   /**
@@ -66,10 +73,9 @@ public class UserService {
             .orElseThrow(
                 () -> new EntityNotFoundException(String.format("No user with id %d found", id)));
 
-    updateUserFields(user, patch);
-
+    userMapper.updateUserFields(user, patch);
     userRepository.save(user);
-    return GetUser.to(user);
+    return userMapper.toGetUserDto(user);
   }
 
   /**
@@ -88,21 +94,22 @@ public class UserService {
     userRepository.deleteById(id);
   }
 
-  /**
-   * Patches the user object
-   *
-   * @param user
-   * @param patch
-   */
-  public void updateUserFields(User user, PatchUser patch) {
-    if (patch.firstName() != null) {
-      user.setFirstName(patch.firstName());
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    return userRepository.findByEmailIgnoreCase(username).orElse(null);
+  }
+
+  public GetUserWithJwtToken login(LoginUser requestBody) {
+    User user =
+        userRepository
+            .findByEmailIgnoreCase(requestBody.username())
+            .orElseThrow(() -> new UsernameNotFoundException("invalid username and/or password"));
+
+    if (!passwordEncoder.matches(requestBody.password(), user.getPassword())) {
+      throw new FailedLoginException("invalid username and/or password");
     }
-    if (patch.lastName() != null) {
-      user.setLastName(patch.lastName());
-    }
-    if (patch.email() != null) {
-      user.setEmail(patch.email());
-    }
+
+    String token = jwtService.generateTokenForUser(user);
+    return userMapper.toGetUserWithJwtToken(user, token);
   }
 }

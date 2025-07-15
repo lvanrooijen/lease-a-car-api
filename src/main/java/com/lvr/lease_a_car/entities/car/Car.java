@@ -33,8 +33,8 @@ public class Car {
   @Column(nullable = false, length = 50)
   private int numberOfDoors;
 
-  @Column(nullable = false)
-  private double co2Emission;
+  @Column(nullable = true)
+  private Double co2Emission;
 
   @Column(nullable = false)
   private double grossPrice;

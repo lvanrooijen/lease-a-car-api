@@ -10,8 +10,4 @@ import com.lvr.lease_a_car.entities.user.User;
  * @param id
  * @param username
  */
-public record GetUser(Long id, String username) {
-  public static GetUser to(User user) {
-    return new GetUser(user.getId(), user.getEmail());
-  }
-}
+public record GetUser(Long id, String username) {}

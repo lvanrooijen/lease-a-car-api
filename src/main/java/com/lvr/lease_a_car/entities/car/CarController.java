@@ -9,6 +9,7 @@ import com.lvr.lease_a_car.utils.constants.routes.LeaseRateConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /** Handles http requests related to car */
@@ -30,12 +32,15 @@ public class CarController {
 
   @Operation(
       summary = "Create car",
-      description = "creates a new car and stores it in the database")
-  @ApiResponse(responseCode = "201", description = "car created, returns body of the created car")
-  @ApiResponse(
-      responseCode = "400",
       description =
-          "car with the same make, model and version is already present in the database, invalid request body provided")
+          "creates a new car and stores it in the database. Accessible to the following roles: ADMIN")
+  @ApiResponses({
+    @ApiResponse(responseCode = "201", description = "Car created and saved in the database"),
+    @ApiResponse(
+        responseCode = "400",
+        description =
+            "car with the same make, model and version is already present in the database, invalid request body provided")
+  })
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<GetCar> postCar(@Valid @RequestBody PostCar postCar) {
@@ -48,10 +53,12 @@ public class CarController {
   @Operation(
       summary = "returns lease rate of car",
       description =
-          "returns the lease rate of a car given the mileage of the car, the interest rate and the duration of the lease contract")
-  @ApiResponse(responseCode = "200", description = "lease rate is calculated")
-  @ApiResponse(responseCode = "404", description = "car not found")
-  @ApiResponse(responseCode = "400", description = "missing or invalid query parameters")
+          "returns the lease rate of a car given the mileage of the car, the interest rate and the duration of the lease contract. Accessible to the following roles: EMPLOYEE, BROKER and ADMIN")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "returns calculated lease-rate"),
+    @ApiResponse(responseCode = "404", description = "Car with given ID not found"),
+    @ApiResponse(responseCode = "400", description = "missing or invalid query parameters")
+  })
   @Parameter(name = "id", description = "car ID", required = true)
   @Parameter(
       name = "duration",
@@ -87,14 +94,16 @@ public class CarController {
   }
 
   @Operation(
-      summary = "Get Car by ID",
+      summary = "Retrieve Car by ID",
       description =
           """
                       returns car with the provided ID.
                       If user is an admin, soft-deleted cars are available.
                       Accessible to the following roles: EMPLOYEE, BROKER and ADMIN""")
-  @ApiResponse(responseCode = "200", description = "returns car")
-  @ApiResponse(responseCode = "404", description = "Car not found")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Car with given ID found"),
+    @ApiResponse(responseCode = "404", description = "Car with specified ID not found")
+  })
   @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
   @GetMapping("/{id}")
   public ResponseEntity<GetCar> getCarById(@PathVariable Long id) {
@@ -105,8 +114,8 @@ public class CarController {
   @Operation(
       summary = "Get a list of all Cars",
       description =
-          "returns a list of all Cars. If user is Admin list contains soft-deleted cars as well Accessible to the following roles: EMPLOYEE, BROKER and ADMIN")
-  @ApiResponse(responseCode = "200", description = "returns list of cars")
+          "returns a list of all Cars. If user is Admin list contains soft-deleted cars as well. Accessible to the following roles: EMPLOYEE, BROKER and ADMIN")
+  @ApiResponse(responseCode = "200", description = "List of Cars successfully retrieved")
   @PreAuthorize("hasRole('BROKER') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
   @GetMapping()
   public ResponseEntity<List<GetCar>> getAllCars() {
@@ -114,10 +123,15 @@ public class CarController {
     return ResponseEntity.ok(cars);
   }
 
-  @Operation(summary = "Update car", description = "updates a car and stores it in the database")
-  @ApiResponse(responseCode = "200", description = "car is updated")
-  @ApiResponse(responseCode = "404", description = "car does not exist")
-  @ApiResponse(responseCode = "400", description = "invalid request body")
+  @Operation(
+      summary = "Update car",
+      description =
+          "updates a car and stores it in the database. Accessible to the following roles: ADMIN ")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Car successfully updated"),
+    @ApiResponse(responseCode = "400", description = "Invalid request body or parameters"),
+    @ApiResponse(responseCode = "404", description = "Car with given ID not found")
+  })
   @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/{id}")
   public ResponseEntity<GetCar> patchCar(@PathVariable Long id, @RequestBody PatchCar patchCar) {
@@ -125,13 +139,34 @@ public class CarController {
     return ResponseEntity.ok(car);
   }
 
-  @Operation(summary = "delete car", description = "soft-deletes a car")
-  @ApiResponse(responseCode = "200", description = "car deleted")
-  @ApiResponse(responseCode = "404", description = "car does not exist")
+  @Operation(
+      summary = "delete car",
+      description = "soft-deletes a car. Accessible to the following roles: ADMIN")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "car deleted"),
+    @ApiResponse(responseCode = "404", description = "car with given ID does not exist")
+  })
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
     carService.deleteCar(id);
+    return ResponseEntity.ok().build();
+  }
+
+  @Operation(
+      summary = "upload cars from a csv file",
+      description =
+          "reads cars from csv file and converts them into the corresponding entities and saves them in the database. Accessible to the following roles: ADMIN")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "cars uploaded"),
+    @ApiResponse(responseCode = "400", description = "invalid csv file")
+  })
+  @PreAuthorize("hasRole('ADMIN')")
+  @PostMapping(
+      value = "upload-cars",
+      consumes = {"multipart/form-data"})
+  public ResponseEntity<Void> uploadCars(@RequestPart("file") MultipartFile file) {
+    carService.uploadCars(file);
     return ResponseEntity.ok().build();
   }
 }

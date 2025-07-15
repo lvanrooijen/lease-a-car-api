@@ -7,12 +7,12 @@
 
 ## How to run
 
-1.  Clone the project:
+1. Clone the project:
 
-              git clone https://github.com/lvanrooijen/lease-a-car-api.git
+             git clone https://github.com/lvanrooijen/lease-a-car-api.git
 
-2.  `mvn install`
-3.  `mvn spring-boot:run`
+2. `mvn install`
+3. `mvn spring-boot:run`
 
     - The API will be running on http://localhost:8080
 
@@ -52,11 +52,12 @@ These changes are not part of the original submission and are intended as person
 - `Repository` : Handles querying the database
 
 - `DTO Folder` : Folder containing DTOs I often use:
-  - `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity
-    to this DTO.
-  - `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method
-    `from()` to convert the DTO to an entity.
-  - `Patch[name of entity]`: Used as a request body for patching an entity.
+    - `[name of entity]Mapper`: Class that handles mapping the dto to entity, entity to dto and patching the entity.
+    - `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity
+      to this DTO.
+    - `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method
+      `from()` to convert the DTO to an entity.
+    - `Patch[name of entity]`: Used as a request body for patching an entity.
 
 #### _`utility` folder containing the following folders:_
 
@@ -71,17 +72,17 @@ Users for testing have been seeded, you can login with the following credentials
 
 1. **Broker**:
 
-   - **Username**: `broker@email.com`
-   - **Password**: `SecurePassword123!`
-   - **Role**: `ROLE_BROKER`
+    - **Username**: `broker@email.com`
+    - **Password**: `SecurePassword123!`
+    - **Role**: `ROLE_BROKER`
 
 2. **Employee**:
 
-   - **Username**: `employee@email.com`
-   - **Password**: `SecurePassword123!`
-   - **Role**: `ROLE_EMPLOYEE`
+    - **Username**: `employee@email.com`
+    - **Password**: `SecurePassword123!`
+    - **Role**: `ROLE_EMPLOYEE`
 
 3. **Admin**:
-   - **Username**: `admin@email.com`
-   - **Password**: `SecurePassword123!`
-   - **Role**: `ROLE_ADMIN`
+    - **Username**: `admin@email.com`
+    - **Password**: `SecurePassword123!`
+    - **Role**: `ROLE_ADMIN`

@@ -109,4 +109,18 @@ public class GlobalExceptionHandler {
     log.warn("[InvalidInputException] {}", e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
+
+  @ExceptionHandler(UploadCarsException.class)
+  public ProblemDetail handleUploadCarsException(Exception e) {
+    log.warn("[UploadCarsException] {}", e.getMessage(), e);
+    return ProblemDetail.forStatusAndDetail(
+        HttpStatus.BAD_REQUEST, "Failed to upload cars, invalid csv file");
+  }
+
+  @ExceptionHandler(FailedLoginException.class)
+  public ProblemDetail handleFailedLoginException(Exception e) {
+    log.warn("[FailedLoginException] {}", e.getMessage(), e);
+    return ProblemDetail.forStatusAndDetail(
+        HttpStatus.BAD_REQUEST, "Invalid username and/or password");
+  }
 }
