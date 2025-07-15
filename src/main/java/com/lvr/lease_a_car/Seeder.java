@@ -3,6 +3,7 @@ package com.lvr.lease_a_car;
 import com.lvr.lease_a_car.entities.car.Car;
 import com.lvr.lease_a_car.entities.car.CarRepository;
 import com.lvr.lease_a_car.entities.customer.Customer;
+import com.lvr.lease_a_car.entities.customer.CustomerRepository;
 import com.lvr.lease_a_car.entities.user.Role;
 import com.lvr.lease_a_car.entities.user.User;
 import com.lvr.lease_a_car.entities.user.UserRepository;
@@ -18,6 +19,7 @@ public class Seeder implements CommandLineRunner {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final CarRepository carRepository;
+  private final CustomerRepository customerRepository;
 
   @Override
   public void run(String... args) throws Exception {
@@ -49,6 +51,7 @@ public class Seeder implements CommandLineRunner {
             .city("Rotterdam")
             .phoneNumber("+31655667788")
             .build();
+    customerRepository.saveAll(List.of(mariaJansen, johnDoe));
   }
 
   private void seedCars() {
