@@ -1,5 +1,8 @@
 package com.lvr.lease_a_car.security.jwt;
 
+import static com.lvr.lease_a_car.utils.constants.JwtConstants.JWT_EXPIRATION_MS;
+import static com.lvr.lease_a_car.utils.constants.JwtConstants.ROLES_CLAIM_NAME;
+
 import com.lvr.lease_a_car.entities.user.User;
 import com.lvr.lease_a_car.security.jwt.dto.JwtTokenDetails;
 import io.jsonwebtoken.Claims;
@@ -19,10 +22,7 @@ import org.springframework.stereotype.Service;
 @Transactional
 @RequiredArgsConstructor
 public class JwtService {
-  private static final String ROLES_CLAIM_NAME = "roles";
   private final SecretKey jwtSecretKey;
-
-  private final int JWT_EXPIRATION_MS = 3600000;
 
   /**
    * generates a jwt token for the user
@@ -89,7 +89,7 @@ public class JwtService {
       if (o instanceof String parsedRole) {
         parsedRoles.add(parsedRole);
       } else {
-        log.warn("role is not valid type: " + o.getClass().getName());
+        log.warn(String.format("role is not a valid type: %s", o.getClass().getName()));
       }
     }
 

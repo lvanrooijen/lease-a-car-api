@@ -11,10 +11,9 @@ public class UserRegistrationEventListener implements ApplicationListener<UserRe
   @Override
   public void onApplicationEvent(UserRegistrationEvent event) {
     log.info(
-        "[USER REGISTRATION EVENT] - username="
-            + event.getEmail()
-            + " userID="
-            + event.getUserId());
+        String.format(
+            "[USER REGISTRATION EVENT] [email=%s] [userID=%s]",
+            event.getEmail(), event.getUserId()));
 
     // TODO send welcome email to user
   }

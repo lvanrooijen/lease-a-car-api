@@ -19,13 +19,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class CustomSecurityFilterChain {
-  private final CustomUserDetailsService customUserDetailsService;
   private final JwtAuthFilter jwtAuthFilter;
 
   @Autowired
   public CustomSecurityFilterChain(
       CustomUserDetailsService customUserDetailsService, JwtAuthFilter jwtAuthFilter) {
-    this.customUserDetailsService = customUserDetailsService;
     this.jwtAuthFilter = jwtAuthFilter;
   }
 

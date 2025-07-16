@@ -1,5 +1,8 @@
 package com.lvr.lease_a_car.security.jwt;
 
+import static com.lvr.lease_a_car.utils.constants.JwtConstants.AUTHORIZATION_HEADER_JWT_PREFIX;
+import static com.lvr.lease_a_car.utils.constants.JwtConstants.AUTHORIZATION_HEADER_NAME;
+
 import com.lvr.lease_a_car.entities.user.User;
 import com.lvr.lease_a_car.entities.user.UserService;
 import jakarta.servlet.FilterChain;
@@ -19,8 +22,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
-  private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
-  private static final String AUTHORIZATION_HEADER_JWT_PREFIX = "Bearer ";
   private final UserService userService;
   private final JwtService jwtService;
 
@@ -58,7 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
               });
     }
-    // Debug purposes
+    // Debug purposes TODO delete me!
     log.info("=== JwtAuthFilter: PATH = {}", request.getRequestURI());
     log.info("=== Authorization header = {}", request.getHeader("Authorization"));
     filterChain.doFilter(request, response);
