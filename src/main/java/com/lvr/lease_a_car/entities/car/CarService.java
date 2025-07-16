@@ -2,8 +2,7 @@ package com.lvr.lease_a_car.entities.car;
 
 import com.lvr.lease_a_car.entities.car.dto.*;
 import com.lvr.lease_a_car.entities.user.User;
-import com.lvr.lease_a_car.exception.ExistingCarException;
-import com.lvr.lease_a_car.exception.UploadCarsException;
+import com.lvr.lease_a_car.exception.car.*;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
@@ -30,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CarService {
   private final CarRepository carRepository;
   private final CarMapper carMapper;
+  private final LeaseRateService leaseRateService;
 
   /**
    * Creates a Car
@@ -65,17 +64,12 @@ public class CarService {
 
     Car car;
     if (loggedInUser.isAdmin()) {
-      car =
-          carRepository
-              .findById(id)
-              .orElseThrow(
-                  () -> new EntityNotFoundException("Car by id " + id + " can not be found"));
+      car = carRepository.findById(id).orElse(null);
     } else {
-      car =
-          carRepository
-              .findByIdAndIsDeletedFalse(id)
-              .orElseThrow(
-                  () -> new EntityNotFoundException("Car by id " + id + " can not be found"));
+      car = carRepository.findByIdAndIsDeletedFalse(id).orElse(null);
+    }
+    if (car == null) {
+      throw new CarNotFoundException(String.format("Car with ID %d not found", id));
     }
     return carMapper.toGetCarDto(car);
   }
@@ -116,10 +110,13 @@ public class CarService {
         carRepository
             .findById(carId)
             .orElseThrow(
-                () -> new EntityNotFoundException("Car with id " + carId + " can not be found"));
+                () ->
+                    new CarNotFoundException(
+                        String.format(
+                            "Failed to calculate lease rate, car with ID %d not found", carId)));
 
     BigDecimal leaseRate =
-        calculateLeaseRate(
+        leaseRateService.calculateLeaseRate(
             new BigDecimal(mileage),
             new BigDecimal(duration),
             new BigDecimal(interestRate),
@@ -142,7 +139,7 @@ public class CarService {
             .findById(id)
             .orElseThrow(
                 () ->
-                    new EntityNotFoundException(
+                    new CarModificationException(
                         String.format(
                             "Failed to update car, Car with id %d can not be found", id)));
 
@@ -165,37 +162,11 @@ public class CarService {
             .findById(id)
             .orElseThrow(
                 () ->
-                    new EntityNotFoundException(
-                        String.format("Failed to delete, a car with id %d can not be found.", id)));
+                    new CarModificationException(
+                        String.format(
+                            "Failed to delete car, a car with id %d can not be found.", id)));
     car.setDeleted(true);
     carRepository.save(car);
-  }
-
-  /**
-   * Calculates the lease rate of a car
-   *
-   * <p>Formula: ((( mileage / 12 ) * duration ) / Nett price) + ((( Interest rate / 100 ) *
-   * Nettprice) / 12 )
-   *
-   * @param duration duration of the lease contract
-   * @param interestRate interest rate on the lease contract
-   * @param mileage mileage a car has on it
-   * @param nettPrice nettPrice of the car
-   * @return lease rate
-   */
-  public BigDecimal calculateLeaseRate(
-      BigDecimal mileage, BigDecimal duration, BigDecimal interestRate, BigDecimal nettPrice) {
-
-    return mileage
-        .divide(new BigDecimal("12"), RoundingMode.HALF_EVEN)
-        .multiply(duration)
-        .divide(nettPrice, 15, RoundingMode.HALF_EVEN)
-        .add(
-            interestRate
-                .divide(new BigDecimal("100"), 15, RoundingMode.HALF_EVEN)
-                .multiply(nettPrice)
-                .divide(new BigDecimal("12"), 15, RoundingMode.HALF_EVEN))
-        .setScale(2, RoundingMode.HALF_EVEN);
   }
 
   /**
@@ -233,7 +204,7 @@ public class CarService {
     try {
       cars = parseCsv(file);
     } catch (IOException e) {
-      throw new UploadCarsException("Failed to convert csv file");
+      throw new CarCreationException("Failed to convert csv file");
     }
     carRepository.saveAll(cars);
   }
@@ -286,7 +257,7 @@ public class CarService {
     try {
       value = formatter.parse(number).doubleValue();
     } catch (ParseException e) {
-      throw new UploadCarsException("invalid value for " + type + " failed to convert: " + number);
+      throw new CarCreationException("invalid value for " + type + " failed to convert: " + number);
     }
     return value;
   }

@@ -3,9 +3,10 @@ package com.lvr.lease_a_car.entities.user;
 import com.lvr.lease_a_car.entities.user.dto.*;
 import com.lvr.lease_a_car.events.userregistration.UserRegistrationEvent;
 import com.lvr.lease_a_car.events.userregistration.UserRegistrationPublisher;
-import com.lvr.lease_a_car.exception.FailedLoginException;
-import com.lvr.lease_a_car.exception.InvalidUserRoleException;
-import com.lvr.lease_a_car.exception.UserAlreadyRegisteredException;
+import com.lvr.lease_a_car.exception.user.FailedLoginException;
+import com.lvr.lease_a_car.exception.user.InvalidUserRoleException;
+import com.lvr.lease_a_car.exception.user.UserAlreadyRegisteredException;
+import com.lvr.lease_a_car.exception.user.UserNotFoundException;
 import com.lvr.lease_a_car.security.jwt.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +37,15 @@ public class UserService implements UserDetailsService {
    */
   public GetUserWithJwtToken registerUser(PostUser body) {
     if (userRepository.findByEmailIgnoreCase(body.email()).isPresent()) {
-      throw new UserAlreadyRegisteredException("This customer is already registered");
+      throw new UserAlreadyRegisteredException(
+          String.format("User with email %s already registered", body.email()));
     }
 
     Role role = null;
     try {
       role = Role.valueOf(body.role().toUpperCase());
     } catch (IllegalArgumentException e) {
-      throw new InvalidUserRoleException("Invalid role");
+      throw new InvalidUserRoleException(String.format("Invalid role: %s", body.role()));
     }
 
     User user =
@@ -79,7 +81,7 @@ public class UserService implements UserDetailsService {
         userRepository
             .findById(id)
             .orElseThrow(
-                () -> new EntityNotFoundException(String.format("No user with id %d found", id)));
+                () -> new UserNotFoundException(String.format("No user with id %d found", id)));
 
     userMapper.updateUserFields(user, patch);
     userRepository.save(user);
@@ -97,7 +99,7 @@ public class UserService implements UserDetailsService {
         .findById(id)
         .orElseThrow(
             () ->
-                new EntityNotFoundException(
+                new UserNotFoundException(
                     String.format("Can't delete user, user with id %d found", id)));
     userRepository.deleteById(id);
   }
@@ -111,7 +113,7 @@ public class UserService implements UserDetailsService {
     User user =
         userRepository
             .findByEmailIgnoreCase(requestBody.username())
-            .orElseThrow(() -> new UsernameNotFoundException("invalid username and/or password"));
+            .orElseThrow(() -> new UserNotFoundException("invalid username and/or password"));
 
     if (!passwordEncoder.matches(requestBody.password(), user.getPassword())) {
       throw new FailedLoginException("invalid username and/or password");

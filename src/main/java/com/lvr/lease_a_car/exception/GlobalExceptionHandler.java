@@ -1,6 +1,8 @@
 package com.lvr.lease_a_car.exception;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.lvr.lease_a_car.exception.base.BaseBadRequestException;
+import com.lvr.lease_a_car.exception.base.BaseNotFoundException;
+import com.lvr.lease_a_car.exception.user.FailedLoginException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -21,9 +22,33 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-  @ExceptionHandler(EntityNotFoundException.class)
-  public ProblemDetail handleEntityNotFoundException(Exception e) {
+
+  /**
+   * Handles all exceptions that extend the BaseNotFoundException class
+   *
+   * @param e exception message
+   * @return ProblemDetail with status code 404 not found and a detail containing the exception
+   *     message
+   */
+  @ExceptionHandler(BaseNotFoundException.class)
+  public ProblemDetail handleEntitiesNotFoundExceptions(Exception e) {
+    String className = e.getClass().getSimpleName();
+    log.warn(String.format("[%s] detail=%s", className, e.getMessage()));
     return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+  }
+
+  /**
+   * Handles all exceptions that extend the BaseBadRequestException class
+   *
+   * @param e exception message
+   * @return ProblemDetail with status code 400 bad request and a detail containing the exception
+   *     message
+   */
+  @ExceptionHandler(BaseBadRequestException.class)
+  public ProblemDetail handleBadRequestExceptions(Exception e) {
+    String className = e.getClass().getSimpleName();
+    log.warn(String.format("[%s] detail=%s", className, e.getMessage()));
+    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 
   /** Fall back exception handler, handles all the uncaught exceptions */
@@ -66,55 +91,16 @@ public class GlobalExceptionHandler {
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 
-  @ExceptionHandler(UsernameNotFoundException.class)
-  public ProblemDetail handleUsernameNotFoundException(Exception e) {
-    return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-  }
-
-  @ExceptionHandler(UserAlreadyRegisteredException.class)
-  public ProblemDetail handleUserAlreadyRegisteredException(Exception e) {
-    return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-  }
-
-  @ExceptionHandler(ExistingCarException.class)
-  public ProblemDetail handleExistingCarException(Exception e) {
-    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
-  }
-
-  @ExceptionHandler(InvalidUserRoleException.class)
-  public ProblemDetail handleInvalidUserRoleException(Exception e) {
-    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
-  }
-
   @ExceptionHandler(AccessDeniedException.class)
   public ProblemDetail handleAccessDeniedException(Exception e) {
     log.warn("[AccessDeniedException] {}", e.getMessage(), e);
-    return ProblemDetail.forStatusAndDetail(
-        HttpStatus.FORBIDDEN, "You dont have permission to access this resource");
-  }
-
-  @ExceptionHandler(CustomerNotFoundException.class)
-  public ProblemDetail handleCustomerNotFoundException(Exception e) {
-    return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    return ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ProblemDetail handleHttpMessageNotReadableException(Exception e) {
     log.warn("[HttpMessageNotReadableException] {}", e.getMessage(), e);
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "invalid request body");
-  }
-
-  @ExceptionHandler(InvalidInputException.class)
-  public ProblemDetail handleInvalidInputException(Exception e) {
-    log.warn("[InvalidInputException] {}", e.getMessage(), e);
-    return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
-  }
-
-  @ExceptionHandler(UploadCarsException.class)
-  public ProblemDetail handleUploadCarsException(Exception e) {
-    log.warn("[UploadCarsException] {}", e.getMessage(), e);
-    return ProblemDetail.forStatusAndDetail(
-        HttpStatus.BAD_REQUEST, "Failed to upload cars, invalid csv file");
   }
 
   @ExceptionHandler(FailedLoginException.class)

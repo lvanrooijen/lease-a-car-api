@@ -4,7 +4,7 @@ import com.lvr.lease_a_car.entities.customer.dto.CustomerMapper;
 import com.lvr.lease_a_car.entities.customer.dto.GetCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PatchCustomer;
 import com.lvr.lease_a_car.entities.customer.dto.PostCustomer;
-import com.lvr.lease_a_car.exception.CustomerNotFoundException;
+import com.lvr.lease_a_car.exception.customer.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +41,10 @@ public class CustomerService {
     Customer customer =
         customerRepository
             .findById(id)
-            .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
+            .orElseThrow(
+                () ->
+                    new CustomerNotFoundException(
+                        String.format("Customer with ID %d not found", id)));
 
     customerMapper.updateCustomerFields(customer, patch);
     customerRepository.save(customer);
@@ -57,7 +60,9 @@ public class CustomerService {
   public void deleteCustomer(Long id) {
     customerRepository
         .findById(id)
-        .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
+        .orElseThrow(
+            () ->
+                new CustomerNotFoundException(String.format("Customer with ID %d not found", id)));
 
     customerRepository.deleteById(id);
   }

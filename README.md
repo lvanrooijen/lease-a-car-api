@@ -87,3 +87,5 @@ Users for testing have been seeded, you can login with the following credentials
 - [spring events](https://www.baeldung.com/spring-events)
 - [BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html)
 - [4 common pitfalls BigDecimal](https://blogs.oracle.com/javamagazine/post/four-common-pitfalls-of-the-bigdecimal-class-and-how-to-avoid-them)
+- [clean code](https://www.baeldung.com/java-clean-code)
+- [spring-email](https://www.baeldung.com/spring-email)
