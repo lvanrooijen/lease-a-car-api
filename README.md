@@ -26,6 +26,8 @@ Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
 
 ### _This project contains the following directories:_
 
+#### _`events` folder containing events and related classes_
+
 #### _`exception` folder containing custom exceptions and a global exception handler_
 
 #### _`security` folder for Spring Security related classes_
