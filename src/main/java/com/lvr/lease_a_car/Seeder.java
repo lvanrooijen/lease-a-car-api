@@ -33,6 +33,7 @@ public class Seeder implements CommandLineRunner {
     Customer johnDoe =
         Customer.builder()
             .name("John Doe")
+            .email("johndoe@email.com")
             .street("Maple Avenue")
             .houseNumber(42)
             .houseNumberAddition("A")
@@ -44,6 +45,7 @@ public class Seeder implements CommandLineRunner {
     Customer mariaJansen =
         Customer.builder()
             .name("Maria Jansen")
+            .email("maria@email.com")
             .street("Beukenlaan")
             .houseNumber(15)
             .houseNumberAddition("B")

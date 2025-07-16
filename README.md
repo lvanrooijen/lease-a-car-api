@@ -1,5 +1,7 @@
 # lease-a-car-api
 
+Originally created as a take-home assessment for SVB, now extended into a personal project.
+
 ## Requirements
 
 - Java 17+
@@ -16,22 +18,9 @@
 
     - The API will be running on http://localhost:8080
 
-## Side note:
-
-The calculateLeaseRate method is
-located [here](https://github.com/lvanrooijen/lease-a-car-api/blob/main/src/main/java/com/lvr/lease_a_car/entities/car/CarService.java) (
-starting at line 184), and the corresponding tests start
-at [line 23](https://github.com/lvanrooijen/lease-a-car-api/blob/main/src/test/java/com/lvr/lease_a_car/entities/car/CarServiceTest.java).
-
-No rounding rules were provided, I attempted to match the results to common calculator (as a result of this some tests
-fail).
-Based on research i chose HALF_EVEN rounding, which is standard in financial applications.
-In a real-world scenario, I would ask for more information.
+## Swagger documentation:
 
 Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
-
-The `post-submission-improvements` branch contains changes made after the deadline passed. 
-These changes are not part of the original submission and are intended as personal improvements only.
 
 ## Structure & Design
 
@@ -86,3 +75,13 @@ Users for testing have been seeded, you can login with the following credentials
     - **Username**: `admin@email.com`
     - **Password**: `SecurePassword123!`
     - **Role**: `ROLE_ADMIN`
+
+## Learning sources:
+
+- [soft delete](https://www.baeldung.com/spring-jpa-soft-delete)
+- [parameterized tests](https://www.baeldung.com/parameterized-tests-junit-5)
+- [open csv](https://www.youtube.com/watch?v=1jzGHF8bpn0)
+- [spring security - wip](https://www.manning.com/books/spring-security-in-action-second-edition)
+- [spring events](https://www.baeldung.com/spring-events)
+- [BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html)
+- [4 common pitfalls BigDecimal](https://blogs.oracle.com/javamagazine/post/four-common-pitfalls-of-the-bigdecimal-class-and-how-to-avoid-them)

@@ -1,6 +1,8 @@
 package com.lvr.lease_a_car.entities.user;
 
 import com.lvr.lease_a_car.entities.user.dto.*;
+import com.lvr.lease_a_car.events.userregistration.UserRegistrationEvent;
+import com.lvr.lease_a_car.events.userregistration.UserRegistrationPublisher;
 import com.lvr.lease_a_car.exception.FailedLoginException;
 import com.lvr.lease_a_car.exception.InvalidUserRoleException;
 import com.lvr.lease_a_car.exception.UserAlreadyRegisteredException;
@@ -21,6 +23,7 @@ public class UserService implements UserDetailsService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final UserMapper userMapper;
+  private final UserRegistrationPublisher eventPublisher;
 
   /**
    * Creates a user
@@ -53,6 +56,11 @@ public class UserService implements UserDetailsService {
             .build();
 
     userRepository.save(user);
+
+    UserRegistrationEvent userRegistrationEvent =
+        new UserRegistrationEvent(user, user.getEmail(), user.getId());
+    eventPublisher.publishUserRegistrationEvent(
+        userRegistrationEvent.getEmail(), userRegistrationEvent.getUserId());
 
     String token = jwtService.generateTokenForUser(user);
     return new GetUserWithJwtToken(user.getId(), user.getUsername(), token);
