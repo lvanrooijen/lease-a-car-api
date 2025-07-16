@@ -1,6 +1,6 @@
 # lease-a-car-api
 
-Originally created as a take-home assessment for SVB, now extended into a personal project.
+Originally created as a take-home assessment for SVB, now extended into a personal (overengineered) learning project.
 
 ## Requirements
 
@@ -50,7 +50,7 @@ Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
       `from()` to convert the DTO to an entity.
     - `Patch[name of entity]`: Used as a request body for patching an entity.
 
-#### _`utility` folder containing the following folders:_
+#### _`utils` folder containing the following folders:_
 
 - `annotations` : Contains custom annotations for validation, primarily used for validating values in request bodies
   through DTOs.
