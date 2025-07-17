@@ -60,9 +60,11 @@ public class UserService implements UserDetailsService {
     userRepository.save(user);
 
     UserRegistrationEvent userRegistrationEvent =
-        new UserRegistrationEvent(user, user.getEmail(), user.getId());
+        new UserRegistrationEvent(user, user.getEmail(), user.getId(), user.getFullName());
     eventPublisher.publishUserRegistrationEvent(
-        userRegistrationEvent.getEmail(), userRegistrationEvent.getUserId());
+        userRegistrationEvent.getEmail(),
+        userRegistrationEvent.getUserId(),
+        userRegistrationEvent.getFullName());
 
     String token = jwtService.generateTokenForUser(user);
     return new GetUserWithJwtToken(user.getId(), user.getUsername(), token);

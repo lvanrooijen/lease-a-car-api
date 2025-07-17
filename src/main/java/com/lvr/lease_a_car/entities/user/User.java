@@ -61,4 +61,8 @@ public class User implements UserDetails {
   public Boolean isAdmin() {
     return role.equals(Role.ADMIN);
   }
+
+  public String getFullName() {
+    return this.firstName + " " + this.lastName;
+  }
 }

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 public class UserRegistrationPublisher {
   private final ApplicationEventPublisher publisher;
 
-  public void publishUserRegistrationEvent(final String email, final Long userId) {
-    UserRegistrationEvent userRegistrationEvent = new UserRegistrationEvent(this, email, userId);
+  public void publishUserRegistrationEvent(
+      final String email, final Long userId, final String fullName) {
+    UserRegistrationEvent userRegistrationEvent =
+        new UserRegistrationEvent(this, email, userId, fullName);
 
     publisher.publishEvent(userRegistrationEvent);
   }

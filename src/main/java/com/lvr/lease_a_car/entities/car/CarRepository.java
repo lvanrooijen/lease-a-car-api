@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface CarRepository extends JpaRepository<Car, Long> {
   List<Car> findAllByIsDeletedFalse();
 
-  public Optional<Car> findByIdAndIsDeletedFalse(Long id);
+  Optional<Car> findByIdAndIsDeletedFalse(Long id);
 
   Optional<Car> findByMakeAndModelAndVersionAndIsDeletedFalse(
       String make, String model, String version);

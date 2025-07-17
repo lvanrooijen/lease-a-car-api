@@ -7,9 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.lvr.lease_a_car.entities.car.dto.GetCar;
 import com.lvr.lease_a_car.entities.car.dto.GetLeaseRate;
 import com.lvr.lease_a_car.entities.user.UserService;
+import com.lvr.lease_a_car.exception.car.CarNotFoundException;
 import com.lvr.lease_a_car.security.jwt.JwtService;
 import com.lvr.lease_a_car.utils.constants.routes.LeaseRateConstants;
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.*;
@@ -168,7 +168,7 @@ class CarControllerTest {
 
     @Test
     void getCarById_non_existent_car_id_should_return_not_found() throws Exception {
-      Mockito.when(carService.getCarById(1L)).thenThrow(EntityNotFoundException.class);
+      Mockito.when(carService.getCarById(1L)).thenThrow(CarNotFoundException.class);
 
       mockMvc
           .perform(get(endpoint + "/1").accept(MediaType.APPLICATION_JSON))

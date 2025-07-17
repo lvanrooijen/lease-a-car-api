@@ -1,6 +1,16 @@
 # lease-a-car-api
 
-Originally created as a take-home assessment for SVB, now extended into a personal (overengineered) learning project.
+Originally created as a take-home assessment, now extended into a personal (overengineered) learning project.
+
+## Technical Specifications
+
+* Spring Boot REST API with full CRUD functionality
+* Role-based access control using Spring Security
+* Soft deletes via Hibernate @SQLDelete
+* CSV import functionality using OpenCSV
+* DTO mapping, exception handling, and input validation
+* documentation with OpenAPI (Swagger)
+* Application event system for user registration flow
 
 ## Requirements
 
@@ -16,11 +26,9 @@ Originally created as a take-home assessment for SVB, now extended into a person
 2. `mvn install`
 3. `mvn spring-boot:run`
 
-    - The API will be running on http://localhost:8080
+## Where to find:
 
-## Swagger documentation:
-
-Swagger Documentation here: http://localhost:8080/swagger-ui/index.html
+* The API will be running on http://localhost:8080
 
 ## Structure & Design
 
@@ -78,7 +86,7 @@ Users for testing have been seeded, you can login with the following credentials
     - **Password**: `SecurePassword123!`
     - **Role**: `ROLE_ADMIN`
 
-## Learning sources:
+## Sources i used to build this project:
 
 - [soft delete](https://www.baeldung.com/spring-jpa-soft-delete)
 - [parameterized tests](https://www.baeldung.com/parameterized-tests-junit-5)
@@ -88,4 +96,5 @@ Users for testing have been seeded, you can login with the following credentials
 - [BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html)
 - [4 common pitfalls BigDecimal](https://blogs.oracle.com/javamagazine/post/four-common-pitfalls-of-the-bigdecimal-class-and-how-to-avoid-them)
 - [clean code](https://www.baeldung.com/java-clean-code)
+- [exception handling](https://www.baeldung.com/exception-handling-for-rest-with-spring)
 - [spring-email](https://www.baeldung.com/spring-email)
