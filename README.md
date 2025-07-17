@@ -29,7 +29,8 @@ Originally created as a take-home assessment, now extended into a personal (over
 
 2. `docker compose up --build`
 3. `mvn install`
-4. `mvn spring-boot:run`
+4. `mvn spring-boot:run` or 
+   [![image](https://github.com/user-attachments/assets/c448a1c6-24f2-438a-9763-df3f5765c057)](https://www.youtube.com/watch?v=MtaTKXJ89jk)
 
 The API runs locally, services run via docker
 
@@ -41,40 +42,36 @@ The API runs locally, services run via docker
 
 ## Structure & Design
 
-### _This project contains the following directories:_
+### This project contains the following directories:
 
-#### _`events` folder containing events and related classes_
+1. `events/` contains events and related classes
+2. `email/` contains email related classes
+3. `exception/` contains custom exceptions and a global exception handler
+4. `security/` contains Spring Security related classes
+5. `entity/` contains:
 
-####  _ `email` folder containing email related classes
+  - `Entity` : Represents the entity/model (Car, Customer)
 
-#### _`exception` folder containing custom exceptions and a global exception handler_
+  - `Controller` : Controller class for handling HTTP requests
 
-#### _`security` folder for Spring Security related classes_
+  - `Service` : A Service class that handles the business logic related to the entity
 
-#### _`entity` folder which contains:_
+  - `Repository` : Handles querying the database
 
-- `Entity` : Represents the entity/model (Car, Customer)
+      - `DTO/` : contains DTOs I often use:
+          - `[name of entity]Mapper`: Class that handles mapping the dto to entity, entity to dto and patching the entity.
+          - `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity
+            to this DTO.
+          - `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method
+            `from()` to convert the DTO to an entity.
+          - `Patch[name of entity]`: Used as a request body for patching an entity.
 
-- `Controller` : Controller class for handling HTTP requests
+6. `utils/` contains the following directories:
 
-- `Service` : A Service class that handles the business logic related to the entity
-
-- `Repository` : Handles querying the database
-
-- `DTO Folder` : Folder containing DTOs I often use:
-    - `[name of entity]Mapper`: Class that handles mapping the dto to entity, entity to dto and patching the entity.
-    - `Get[name of entity]`: What is returned to the controller. Contains a factory method `to()` to convert the entity
-      to this DTO.
-    - `Post[name of entity]`: Used as a request body when posting a new entity. Occasionally contains a factory method
-      `from()` to convert the DTO to an entity.
-    - `Patch[name of entity]`: Used as a request body for patching an entity.
-
-#### _`utils` folder containing the following folders:_
-
-- `annotations` : Contains custom annotations for validation, primarily used for validating values in request bodies
-  through DTOs.
-- `constants` : contains classes that hold constant values. (Endpoints, ExceptionMessages)
-- `configuration` : contains classes that hold configurations
+    - `annotations/` : contains custom annotations for validation, primarily used for validating values in request bodies
+      through DTOs.
+    - `constants/` : contains classes that hold constant values. (Endpoints, ExceptionMessages)
+    - `configuration/` : contains classes that hold configurations
 
 ## Seeded Users
 
