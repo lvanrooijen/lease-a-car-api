@@ -11,6 +11,10 @@ Originally created as a take-home assessment, now extended into a personal (over
 * DTO mapping, exception handling, and input validation
 * documentation with OpenAPI (Swagger)
 * Application event system for user registration flow
+* Email templates created with Thymeleaf
+* PostgreSQL database running in Docker
+* PG admin for database management via Docker
+* MailDev for local email testing via Docker
 
 ## Requirements
 
@@ -23,18 +27,25 @@ Originally created as a take-home assessment, now extended into a personal (over
 
              git clone https://github.com/lvanrooijen/lease-a-car-api.git
 
-2. `mvn install`
-3. `mvn spring-boot:run`
+2. `docker compose up --build`
+3. `mvn install`
+4. `mvn spring-boot:run`
+
+The API runs locally, services run via docker
 
 ## Where to find:
 
 * The API will be running on http://localhost:8080
+* MailDev runs on http://localhost:1080
+* PG admin runs on http://localhost:5050 (register server, hostname: lease_a_car_postgres)
 
 ## Structure & Design
 
 ### _This project contains the following directories:_
 
 #### _`events` folder containing events and related classes_
+
+####  _ `email` folder containing email related classes
 
 #### _`exception` folder containing custom exceptions and a global exception handler_
 
