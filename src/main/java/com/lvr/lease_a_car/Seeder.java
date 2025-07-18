@@ -23,40 +23,43 @@ public class Seeder implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    seedAdmin();
     seedUsers();
     seedCars();
     seedCustomers();
   }
 
   private void seedCustomers() {
-    Customer johnDoe =
+    if (!customerRepository.findAll().isEmpty()) return;
+
+    Customer scooter =
         Customer.builder()
-            .name("John Doe")
-            .email("johndoe@email.com")
-            .street("Maple Avenue")
-            .houseNumber(42)
-            .houseNumberAddition("A")
-            .zipcode("1234AB")
-            .city("Amsterdam")
-            .phoneNumber("+31611223344")
+            .name("Scooter")
+            .email("scooter@pandora.com")
+            .street("Gearbox Avenue")
+            .houseNumber(66)
+            .zipcode("1234SC")
+            .city("Sanctuary")
+            .phoneNumber("+31610001234")
             .build();
 
-    Customer mariaJansen =
+    Customer roxxy =
         Customer.builder()
-            .name("Maria Jansen")
-            .email("maria@email.com")
-            .street("Beukenlaan")
-            .houseNumber(15)
-            .houseNumberAddition("B")
-            .zipcode("5678CD")
-            .city("Rotterdam")
-            .phoneNumber("+31655667788")
+            .name("Roxxy")
+            .email("roxxy@pandora.com")
+            .street("Garage Street")
+            .houseNumber(7)
+            .houseNumberAddition("A")
+            .zipcode("1234RX")
+            .city("Sanctuary")
+            .phoneNumber("+31620001234")
             .build();
-    customerRepository.saveAll(List.of(mariaJansen, johnDoe));
+
+    customerRepository.saveAll(List.of(scooter, roxxy));
   }
 
   private void seedCars() {
+    if (!carRepository.findAll().isEmpty()) return;
+
     Car citroen2cv =
         Car.builder()
             .make("Citroën")
@@ -84,6 +87,8 @@ public class Seeder implements CommandLineRunner {
   }
 
   private void seedUsers() {
+    if (!userRepository.findAll().isEmpty()) return;
+
     User broker =
         User.builder()
             .email("broker@email.com")
@@ -102,6 +107,8 @@ public class Seeder implements CommandLineRunner {
             .password(passwordEncoder.encode("SecurePassword123!"))
             .build();
     userRepository.saveAll(List.of(employee, broker));
+
+    seedAdmin();
   }
 
   private void seedAdmin() {

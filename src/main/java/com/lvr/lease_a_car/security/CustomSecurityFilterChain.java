@@ -2,6 +2,7 @@ package com.lvr.lease_a_car.security;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import com.lvr.lease_a_car.entities.user.UserService;
 import com.lvr.lease_a_car.security.jwt.JwtAuthFilter;
 import com.lvr.lease_a_car.security.jwt.UnAuthorizedEntryPoint;
 import com.lvr.lease_a_car.utils.constants.routes.SecurityRoutes;
@@ -22,8 +23,7 @@ public class CustomSecurityFilterChain {
   private final JwtAuthFilter jwtAuthFilter;
 
   @Autowired
-  public CustomSecurityFilterChain(
-      CustomUserDetailsService customUserDetailsService, JwtAuthFilter jwtAuthFilter) {
+  public CustomSecurityFilterChain(UserService userService, JwtAuthFilter jwtAuthFilter) {
     this.jwtAuthFilter = jwtAuthFilter;
   }
 

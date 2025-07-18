@@ -2,6 +2,7 @@ package com.lvr.lease_a_car.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,6 +30,7 @@ public class EmailService {
   public void sendUserRegisterationEmail(String to, String username) throws MessagingException {
     Context context = new Context();
     context.setVariable("username", username);
+    context.setVariable("year", LocalDate.now().getYear());
 
     String body = templateEngine.process("UserRegistration.html", context);
 
