@@ -6,7 +6,6 @@ import com.lvr.lease_a_car.entities.user.UserService;
 import com.lvr.lease_a_car.security.jwt.JwtAuthFilter;
 import com.lvr.lease_a_car.security.jwt.UnAuthorizedEntryPoint;
 import com.lvr.lease_a_car.utils.constants.routes.SecurityRoutes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class CustomSecurityFilterChain {
   private final JwtAuthFilter jwtAuthFilter;
 
-  @Autowired
   public CustomSecurityFilterChain(UserService userService, JwtAuthFilter jwtAuthFilter) {
     this.jwtAuthFilter = jwtAuthFilter;
   }

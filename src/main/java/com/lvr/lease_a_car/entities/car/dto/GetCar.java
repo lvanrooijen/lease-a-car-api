@@ -1,5 +1,6 @@
 package com.lvr.lease_a_car.entities.car.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Car DTO containing details returned in HTTP-requests
@@ -15,6 +16,7 @@ package com.lvr.lease_a_car.entities.car.dto;
  * @param grossPrice
  * @param nettPrice
  */
+@Schema(description = "Data returned when a car is requested")
 public record GetCar(
     Long id,
     String make,
